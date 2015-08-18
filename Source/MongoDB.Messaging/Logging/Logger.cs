@@ -242,7 +242,6 @@ namespace MongoDB.Messaging.Logging
                 _logWriter = Activator.CreateInstance(type) as ILogWriter;
                 return;
             }
-
         }
 
         private static void DebugWrite(LogData logData)
