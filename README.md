@@ -4,6 +4,30 @@
 
 The MongoDB Messaging library is a lightweight queue pub/sub processing library based on MongoDB data store.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/anoiwx8md0uoo65p?svg=true)](https://ci.appveyor.com/project/LoreSoft/mongodb-messaging)
+
+[![NuGet Version](https://img.shields.io/nuget/v/MongoDB.Messaging.svg?style=flat-square)](https://www.nuget.org/packages/MongoDB.Messaging/)
+
+[![NuGet Version](https://img.shields.io/nuget/dt/MongoDB.Messaging.svg?style=flat-square)](https://www.nuget.org/packages/MongoDB.Messaging/)
+
+## Download
+
+The MongoDB.Messaging library is available on nuget.org via package name `MongoDB.Messaging`.
+
+To install MongoDB.Messaging, run the following command in the Package Manager Console
+
+    PM> Install-Package MongoDB.Messaging
+    
+More information about NuGet package avaliable at
+<https://nuget.org/packages/MongoDB.Messaging>
+
+## Development Builds
+
+Development builds are available on the myget.org feed.  A development build is promoted to the main NuGet feed when it's determined to be stable. 
+
+In your Package Manager settings add the following package source for development builds:
+<http://www.myget.org/F/loresoft/>
+
 ### Features
 
 * Easy to use Fluent API
@@ -42,15 +66,17 @@ The queue configuration is used to set default values on messages published to a
 
 An example of using the fluent api to configure the sleep queue.
 
-	MessageQueue.Default.Configure(c => c
-        .Connection("MongoMessaging")
-        .Queue(s => s
-            .Name(SleepMessage.QueueName)
-            .Priority(MessagePriority.Normal)
-			.ResponseQueue("ReplyQueueName")
-			.Retry(5)            
-        )
-    );
+```c#
+MessageQueue.Default.Configure(c => c
+    .Connection("MongoMessaging")
+    .Queue(s => s
+        .Name(SleepMessage.QueueName)
+        .Priority(MessagePriority.Normal)
+		.ResponseQueue("ReplyQueueName")
+		.Retry(5)            
+    )
+);
+```
 
 #### Properties
 
@@ -65,14 +91,16 @@ An example of using the fluent api to configure the sleep queue.
 
 To publish a message to a queue, use the fluent api.
 
-	var message = MessageQueue.Default.Publish(m => m
-        .Queue(SleepMessage.QueueName)
-        .Data(sleepMessage)
-        .Correlation("321B4671-3B4C-4B97-8E81-D6A8CF22D4F0")
-        .Description("User friendly description of the message")
-        .Priority(MessagePriority.Normal)
-        .Retry(1)                
-    ).Result;
+```c#
+var message = await MessageQueue.Default.Publish(m => m
+    .Queue(SleepMessage.QueueName)
+    .Data(sleepMessage)
+    .Correlation("321B4671-3B4C-4B97-8E81-D6A8CF22D4F0")
+    .Description("User friendly description of the message")
+    .Priority(MessagePriority.Normal)
+    .Retry(1)                
+);
+```
 
 #### Properties
 
@@ -99,14 +127,16 @@ To publish a message to a queue, use the fluent api.
 
 To subscribe a message to a queue, use the fluent api.
 
-    MessageQueue.Default.Configure(c => c
-        .Connection("MongoMessaging")
-        .Subscribe(s => s
-            .Queue(SleepMessage.QueueName)
-            .Handler<SleepHandler>()
-            .Workers(4)
-        )
-    );
+```c#
+MessageQueue.Default.Configure(c => c
+    .Connection("MongoMessaging")
+    .Subscribe(s => s
+        .Queue(SleepMessage.QueueName)
+        .Handler<SleepHandler>()
+        .Workers(4)
+    )
+);
+```
 
 #### Properties
 
@@ -128,68 +158,72 @@ To subscribe a message to a queue, use the fluent api.
 
 In order for the message subscribers to process messages off queue, the `MessageService` needs to be created and `Start` called. Note, the `MessageService.Stop()` method tries to gracefully stop by waiting for active processes to finish.
 
-	_messageService = new MessageService();
+```c#
+_messageService = new MessageService();
 
-	// on service or application start
-	_messageService.Start();
+// on service or application start
+_messageService.Start();
 
-	// on service stop.  
-	_messageService.Stop();
-
+// on service stop.  
+_messageService.Stop();
+```
 
 ## IMessageSubscriber Interface
 
 The following is a sample implementation of `IMessageSubscriber`
 
-    public class SleepHandler : IMessageSubscriber
+```c#
+public class SleepHandler : IMessageSubscriber
+{
+    public MessageResult Process(ProcessContext context)
     {
-        public MessageResult Process(ProcessContext context)
-        {
-            // get message data
-            var sleepMessage = context.Data<SleepMessage>();
+        // get message data
+        var sleepMessage = context.Data<SleepMessage>();
 
-            // Do processing here
-			
-            return MessageResult.Successful;
-        }
-
-        public void Dispose()
-        {
-			// free resources
-        }
+        // Do processing here
+		
+        return MessageResult.Successful;
     }
 
+    public void Dispose()
+    {
+		// free resources
+    }
+}
+```
 
 ## IMessageRetry Interface
 
 The following is the default implementation of `IMessageRetry`
 
-    public class MessageRetry : IMessageRetry
+```c#
+public class MessageRetry : IMessageRetry
+{
+    public virtual bool ShouldRetry(ProcessContext processContext, Exception exception)
     {
-        public virtual bool ShouldRetry(ProcessContext processContext, Exception exception)
-        {
-			// get current message 
-            var message = processContext.Message;
+		// get current message 
+        var message = processContext.Message;
 
-			// true to retry message
-            return message.ErrorCount < message.RetryCount;
-        }
-
-        public virtual DateTime NextAttempt(ProcessContext processContext)
-        {
-            var message = processContext.Message;
-
-            // retry weight, 1 = 1 min, 2 = 30 min, 3 = 2 hrs, 4+ = 8 hrs
-            if (message.ErrorCount > 3)
-                return DateTime.Now.AddHours(8);
-
-            if (message.ErrorCount == 3)
-                return DateTime.Now.AddHours(2);
-
-            if (message.ErrorCount == 2)
-                return DateTime.Now.AddMinutes(30);
-
-            // default
-            return DateTime.Now.AddMinutes(1);
-        }
+		// true to retry message
+        return message.ErrorCount < message.RetryCount;
     }
+
+    public virtual DateTime NextAttempt(ProcessContext processContext)
+    {
+        var message = processContext.Message;
+
+        // retry weight, 1 = 1 min, 2 = 30 min, 3 = 2 hrs, 4+ = 8 hrs
+        if (message.ErrorCount > 3)
+            return DateTime.Now.AddHours(8);
+
+        if (message.ErrorCount == 3)
+            return DateTime.Now.AddHours(2);
+
+        if (message.ErrorCount == 2)
+            return DateTime.Now.AddMinutes(30);
+
+        // default
+        return DateTime.Now.AddMinutes(1);
+    }
+}
+```
