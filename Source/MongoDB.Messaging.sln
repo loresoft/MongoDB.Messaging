@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB.Messaging", "MongoDB.Messaging\MongoDB.Messaging.csproj", "{F0E701B8-3597-4D3D-AF4D-C57C75E01CCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB.Messaging.Tests", "MongoDB.Messaging.Tests\MongoDB.Messaging.Tests.csproj", "{EA967B8B-38C2-4B53-9775-4C4A32A87BCD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sleep.Messages", "..\Samples\Sleep.Messages\Sleep.Messages.csproj", "{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sleep.Client", "..\Samples\Sleep.Client\Sleep.Client.csproj", "{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sleep.Service", "..\Samples\Sleep.Service\Sleep.Service.csproj", "{68549D2B-2E62-4DB9-B482-4054018AF387}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0E701B8-3597-4D3D-AF4D-C57C75E01CCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0E701B8-3597-4D3D-AF4D-C57C75E01CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0E701B8-3597-4D3D-AF4D-C57C75E01CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0E701B8-3597-4D3D-AF4D-C57C75E01CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA967B8B-38C2-4B53-9775-4C4A32A87BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA967B8B-38C2-4B53-9775-4C4A32A87BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA967B8B-38C2-4B53-9775-4C4A32A87BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA967B8B-38C2-4B53-9775-4C4A32A87BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68549D2B-2E62-4DB9-B482-4054018AF387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68549D2B-2E62-4DB9-B482-4054018AF387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68549D2B-2E62-4DB9-B482-4054018AF387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68549D2B-2E62-4DB9-B482-4054018AF387}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
+		{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
+		{68549D2B-2E62-4DB9-B482-4054018AF387} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
+	EndGlobalSection
+EndGlobal

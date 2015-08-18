@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>MongoDB.Messaging</id>
+    <version>1.0.0</version>
+    <authors>LoreSoft</authors>
+    <owners>LoreSoft</owners>
+    <licenseUrl>https://raw.githubusercontent.com/loresoft/MongoDB.Messaging/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/loresoft/MongoDB.Messaging</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The MongoDB Messaging library is a lightweight queue pub/sub processing library based on MongoDB data store.</description>
+    <summary>MongoDB Messaging library</summary>
+    <copyright>Copyright (c) 2014, LoreSoft</copyright>
+    <language>en-US</language>
+    <tags>MongoDB Messaging Pub Sub Queue</tags>
+    <dependencies>
+      <dependency id="MongoDB.Driver" version="2.0.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\MongoDB.Messaging.dll" target="lib\net45\" />
+    <file src="bin\Release\MongoDB.Messaging.pdb" target="lib\net45\" />
+    <file src="bin\Release\MongoDB.Messaging.XML" target="lib\net45\" />
+    <file src="**\*.cs" target="src" />
+    <file src="..\GlobalAssemblyInfo.cs" target="src" />
+  </files>
+</package>
