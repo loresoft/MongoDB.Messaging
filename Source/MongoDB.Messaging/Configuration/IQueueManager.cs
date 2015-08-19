@@ -38,7 +38,7 @@ namespace MongoDB.Messaging.Configuration
         /// Gets the queues with an active subscriber.
         /// </summary>
         /// <value>
-        /// The queues with an active subscriber..
+        /// The queues with an active subscriber.
         /// </value>
         IEnumerable<IQueueContainer> Subscriptions { get; }
 
@@ -59,7 +59,8 @@ namespace MongoDB.Messaging.Configuration
         IQueueContainer Register(IQueueConfiguration queueConfiguration);
 
         /// <summary>
-        /// Loads the specified queue by name. If the queue has not been configured, it will be created.        /// </summary>
+        /// Loads the specified queue by name. If the queue has not been configured, it will be created.
+        /// </summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <returns>An instance of <see cref="IQueueContainer"/> with the queue name.</returns>
         IQueueContainer Load(string queueName);

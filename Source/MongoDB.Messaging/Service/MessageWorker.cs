@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
 using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Subscription;
 
@@ -12,8 +11,6 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class MessageWorker : MessageWorkerBase
     {
-        
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageWorker"/> class.
         /// </summary>
@@ -94,7 +91,7 @@ namespace MongoDB.Messaging.Service
                     .Write();
 
                 var task = Repository.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
-                
+
                 // only retry when successfully set result to error
                 task.ContinueWith(t => RetryMessage(t.Result, ex), TaskContinuationOptions.OnlyOnRanToCompletion);
                 task.ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);

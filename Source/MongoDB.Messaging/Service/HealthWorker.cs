@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using MongoDB.Driver;
-
 using MongoDB.Messaging.Logging;
 
 namespace MongoDB.Messaging.Service
@@ -12,8 +11,6 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class HealthWorker : MessageWorkerBase
     {
-        
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthWorker"/> class.
         /// </summary>

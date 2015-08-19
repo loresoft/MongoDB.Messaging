@@ -14,8 +14,6 @@ namespace MongoDB.Messaging.Configuration
     /// </summary>
     public class QueueManager : IQueueManager
     {
-        
-
         private readonly ConcurrentDictionary<string, IQueueContainer> _queues;
 
         private readonly object _databaseLock;

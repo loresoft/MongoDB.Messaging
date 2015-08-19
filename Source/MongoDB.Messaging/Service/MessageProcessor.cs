@@ -12,8 +12,6 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class MessageProcessor : IMessageProcessor
     {
-        
-
         private readonly Lazy<IList<IMessageWorker>> _workers;
         private readonly IMessageService _service;
         private readonly IQueueContainer _container;
@@ -137,7 +135,7 @@ namespace MongoDB.Messaging.Service
             if (!_workers.IsValueCreated)
                 return;
 
-            // Stop Works
+            // Stop Workers
             foreach (var worker in _workers.Value)
             {
                 Logger.Trace()

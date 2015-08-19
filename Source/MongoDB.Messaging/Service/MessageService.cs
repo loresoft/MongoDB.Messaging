@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
-using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Logging;
 
 namespace MongoDB.Messaging.Service
 {
@@ -13,8 +12,6 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class MessageService : IMessageService
     {
-        
-
         private readonly Lazy<IList<IMessageProcessor>> _processors;
         private readonly IQueueManager _manager;
 

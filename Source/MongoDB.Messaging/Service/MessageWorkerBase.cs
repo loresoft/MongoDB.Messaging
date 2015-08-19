@@ -237,7 +237,6 @@ namespace MongoDB.Messaging.Service
 
                 watch.Stop();
 
-                // log as Info if there are results
                 Logger.Trace()
                     .Message("Completed '{0}' process in: {1} ms.", Name, watch.ElapsedMilliseconds)
                     .Write();
