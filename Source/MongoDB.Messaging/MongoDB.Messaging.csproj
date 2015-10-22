@@ -34,16 +34,16 @@
     <DocumentationFile>bin\Release\MongoDB.Messaging.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Bson.2.0.1\lib\net45\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson, Version=2.1.0.145, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.1.0\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Driver.2.0.1\lib\net45\MongoDB.Driver.dll</HintPath>
+    <Reference Include="MongoDB.Driver, Version=2.1.0.145, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.2.1.0\lib\net45\MongoDB.Driver.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Driver.Core, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Driver.Core.2.0.1\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    <Reference Include="MongoDB.Driver.Core, Version=2.1.0.145, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.1.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -70,7 +70,19 @@
     <Compile Include="Fluent\QueueNameBuilder.cs" />
     <Compile Include="Fluent\SubscriberBuilder.cs" />
     <Compile Include="Fluent\SubscriberQueueBuilder.cs" />
+    <Compile Include="Logging\AsynchronousContext.cs" />
+    <Compile Include="Logging\DisposeAction.cs" />
+    <Compile Include="Logging\ILogBuilder.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\ILogWriter.cs" />
+    <Compile Include="Logging\IPropertyContext.cs" />
+    <Compile Include="Logging\LogBuilder.cs" />
+    <Compile Include="Logging\LogData.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerCreateBuilder.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\PropertyContext.cs" />
+    <Compile Include="Logging\TraceLogWriter.cs" />
     <Compile Include="Subscription\IMessageRetry.cs" />
     <Compile Include="Subscription\IMessageSubscriber.cs" />
     <Compile Include="Configuration\IQueueContainer.cs" />

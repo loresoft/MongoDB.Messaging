@@ -18,7 +18,7 @@ To install MongoDB.Messaging, run the following command in the Package Manager C
 
     PM> Install-Package MongoDB.Messaging
     
-More information about NuGet package avaliable at
+More information about NuGet package available at
 <https://nuget.org/packages/MongoDB.Messaging>
 
 ## Development Builds
@@ -46,19 +46,29 @@ A queue is equivalent to a MongoDB collection.  The name of the queue will match
 
 Queue names must be alphanumeric, without spaces or symbols.
 
-It is a good practice to suffix the queue name with `Queue`
+It is a good practice to suffix the queue name with `Queue`.
 
 #### Message
 
-A message is the high level object that is a generic definition of a messages.  The message contains processing level information.  The message object automatically created and updated by the Fluent API and should not be used directly by the publisher or subscriber.
+A message is the high level object that is a generic definition of a messages.  The message contains processing level information.  The message object is automatically created and updated by the Fluent API and should not be updated directly by the publisher or subscriber.
 
 #### Data
 
-Data is the user defined information to be passed with the message.  Use data to pass what every information you need to process the message.
+Data is the message payload to be processed with the message.  Use data to pass information you need to process the message.
 
 The data object must be serializable by MongoDB driver.
 
 It is a good practice to have one queue per data object being passed to limit confusion and to maintain simplicity when subscribing to the queue. 
+
+#### Publish
+
+Publishing a message adds the message with the corresponding data to a queue for processing.  
+
+#### Subscribe
+
+In order to process a message on a queue, an application needs to subscribe to a queue.  There can be many subscribers to a queue to scale the load across processes. A subscriber and also set the worker count to scale the number of processing threads for that subscriber.
+
+The framework ensures that only one subscriber can process a messages.
 
 ## Queue Configuration
 
