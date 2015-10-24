@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>MongoDB.Messaging</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>LoreSoft</authors>
     <owners>LoreSoft</owners>
     <licenseUrl>https://raw.githubusercontent.com/loresoft/MongoDB.Messaging/master/LICENSE</licenseUrl>
@@ -14,7 +14,7 @@
     <language>en-US</language>
     <tags>MongoDB Messaging Pub Sub Queue</tags>
     <dependencies>
-      <dependency id="MongoDB.Driver" version="2.0.0" />
+      <dependency id="MongoDB.Driver" version="2.1.0" />
     </dependencies>
   </metadata>
   <files>
