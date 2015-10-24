@@ -29,6 +29,7 @@ namespace MongoDB.Messaging.Configuration
 
             ConnectionName = "Messaging";
             ControlName = "ServiceControlQueue";
+            LockCollection = "ServiceLock";
         }
 
         /// <summary>
@@ -58,6 +59,13 @@ namespace MongoDB.Messaging.Configuration
         /// </value>
         public string ControlName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the name of the lock control collection.
+        /// </summary>
+        /// <value>
+        /// The name of the lock control collection.
+        /// </value>
+        public string LockCollection { get; set; }
 
         /// <summary>
         /// Gets the configured queues.
@@ -108,7 +116,7 @@ namespace MongoDB.Messaging.Configuration
         public IQueueContainer Register(IQueueConfiguration queueConfiguration)
         {
             if (queueConfiguration == null)
-                throw new ArgumentNullException("queueConfiguration");
+                throw new ArgumentNullException(nameof(queueConfiguration));
 
 
             var queue = Load(queueConfiguration.Name);
@@ -142,15 +150,15 @@ namespace MongoDB.Messaging.Configuration
         public IQueueContainer Load(string queueName)
         {
             if (queueName == null)
-                throw new ArgumentNullException("queueName");
+                throw new ArgumentNullException(nameof(queueName));
 
             if (string.IsNullOrWhiteSpace(queueName))
-                throw new ArgumentException("The queue name is invalid.", "queueName");
+                throw new ArgumentException("The queue name is invalid.", nameof(queueName));
 
             return _queues.GetOrAdd(queueName, key =>
             {
-                var queue = new QueueConfiguration { Name = key };
-                return CreateInstance(queue);
+                var queue = new QueueConfiguration { Name = key, LockCollection = LockCollection };
+                return CreateContainer(queue);
             });
         }
 
@@ -182,7 +190,7 @@ namespace MongoDB.Messaging.Configuration
             }
         }
 
-        private IQueueContainer CreateInstance(IQueueConfiguration configuration)
+        private IQueueContainer CreateContainer(IQueueConfiguration configuration)
         {
             var collection = GetCollection(configuration.Name);
             var repository = new QueueRepository(collection);

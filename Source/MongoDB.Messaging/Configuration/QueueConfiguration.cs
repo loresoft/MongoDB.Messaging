@@ -24,6 +24,9 @@ namespace MongoDB.Messaging.Configuration
             ExpireSuccessful = TimeSpan.FromHours(1);
             ExpireWarning = TimeSpan.FromDays(2);
             ExpireError = TimeSpan.FromDays(7);
+
+            HealthCheck = TimeSpan.FromMinutes(1);
+            LockCollection = "ServiceLock";
         }
 
 
@@ -140,5 +143,22 @@ namespace MongoDB.Messaging.Configuration
         /// The time error messages will kept before expiring.
         /// </value>
         public TimeSpan ExpireError { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the time between health checks.
+        /// </summary>
+        /// <value>
+        /// The time between health checks.
+        /// </value>
+        public TimeSpan HealthCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name lock collection.
+        /// </summary>
+        /// <value>
+        /// The name lock collection.
+        /// </value>
+        public string LockCollection { get; set; }
     }
 }

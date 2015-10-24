@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using MongoDB.Driver;
+using MongoDB.Messaging.Locks;
 using MongoDB.Messaging.Logging;
 
 namespace MongoDB.Messaging.Service
@@ -11,6 +12,8 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class HealthWorker : MessageWorkerBase
     {
+        private readonly ILockManager _lockManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthWorker"/> class.
         /// </summary>
@@ -19,7 +22,12 @@ namespace MongoDB.Messaging.Service
         public HealthWorker(IMessageProcessor processor, string name)
             : base(processor, name)
         {
+            // create throttle lock to only allow one run per schedule
+            var lockCollection = Configuration.LockCollection ?? "ServiceLock";
+            var collection = Repository.Collection.Database.GetCollection<LockData>(lockCollection);
+            _lockManager = new ThrottleLock(collection, Configuration.HealthCheck);
         }
+
 
         /// <summary>
         /// Gets the poll time.
@@ -29,7 +37,7 @@ namespace MongoDB.Messaging.Service
         /// </value>
         public override TimeSpan PollTime
         {
-            get { return TimeSpan.FromMinutes(1); }
+            get { return Configuration.HealthCheck; }
         }
 
         /// <summary>
@@ -37,6 +45,9 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         protected override void Process()
         {
+            if (!_lockManager.Acquire(Name))
+                return;
+
             CheckTimeout();
             CheckSchedule();
         }

@@ -143,5 +143,16 @@ namespace MongoDB.Messaging.Fluent
             return this;
         }
 
+
+        /// <summary>
+        /// Sets the health check poll time.
+        /// </summary>
+        /// <param name="value">The health poll time.</param>
+        /// <returns></returns>
+        public SubscriberBuilder HeathCheck(TimeSpan value)
+        {
+            Configuration.HealthCheck = value;
+            return this;
+        }
     }
 }

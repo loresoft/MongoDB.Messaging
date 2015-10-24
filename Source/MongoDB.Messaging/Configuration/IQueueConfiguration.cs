@@ -124,5 +124,21 @@ namespace MongoDB.Messaging.Configuration
         /// </value>
         TimeSpan ExpireError { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the time between health checks.
+        /// </summary>
+        /// <value>
+        /// The time between health checks.
+        /// </value>
+        TimeSpan HealthCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name lock collection.
+        /// </summary>
+        /// <value>
+        /// The name lock collection.
+        /// </value>
+        string LockCollection { get; set; }
     }
 }

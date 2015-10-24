@@ -8,10 +8,6 @@ namespace MongoDB.Messaging.Configuration
     /// </summary>
     public class QueueContainer : IQueueContainer
     {
-        private readonly string _name;
-        private readonly IQueueRepository _repository;
-        private readonly IQueueConfiguration _configuration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="QueueContainer"/> class.
         /// </summary>
@@ -25,14 +21,14 @@ namespace MongoDB.Messaging.Configuration
         public QueueContainer(IQueueConfiguration configuration, IQueueRepository repository)
         {
             if (configuration == null)
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
 
             if (repository == null)
-                throw new ArgumentNullException("repository");
+                throw new ArgumentNullException(nameof(repository));
 
-            _name = configuration.Name;
-            _configuration = configuration;
-            _repository = repository;
+            Name = configuration.Name;
+            Configuration = configuration;
+            Repository = repository;
         }
 
         /// <summary>
@@ -41,10 +37,7 @@ namespace MongoDB.Messaging.Configuration
         /// <value>
         /// The name of the queue.
         /// </value>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the storage repository.
@@ -52,10 +45,7 @@ namespace MongoDB.Messaging.Configuration
         /// <value>
         /// The storage repository.
         /// </value>
-        public IQueueRepository Repository
-        {
-            get { return _repository; }
-        }
+        public IQueueRepository Repository { get; }
 
         /// <summary>
         /// Gets the queue configuration.
@@ -63,10 +53,8 @@ namespace MongoDB.Messaging.Configuration
         /// <value>
         /// The queue configuration.
         /// </value>
-        public IQueueConfiguration Configuration
-        {
-            get { return _configuration; }
-        }
+        public IQueueConfiguration Configuration { get; }
+
 
         /// <summary>
         /// Apply default settings to the specified <paramref name="message" />.
@@ -74,10 +62,10 @@ namespace MongoDB.Messaging.Configuration
         /// <param name="message">The message to update.</param>
         public void ApplyDefaults(Message message)
         {
-            message.Name = _configuration.Name;
-            message.RetryCount = _configuration.RetryCount;
-            message.Priority = (int)_configuration.Priority;
-            message.ResponseQueue = _configuration.ResponseQueue;
+            message.Name = Configuration.Name;
+            message.RetryCount = Configuration.RetryCount;
+            message.Priority = (int)Configuration.Priority;
+            message.ResponseQueue = Configuration.ResponseQueue;
         }
     }
 }

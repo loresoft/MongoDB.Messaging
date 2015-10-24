@@ -70,6 +70,11 @@
     <Compile Include="Fluent\QueueNameBuilder.cs" />
     <Compile Include="Fluent\SubscriberBuilder.cs" />
     <Compile Include="Fluent\SubscriberQueueBuilder.cs" />
+    <Compile Include="Locks\DistributedLock.cs" />
+    <Compile Include="Locks\ILockManager.cs" />
+    <Compile Include="Locks\LockData.cs" />
+    <Compile Include="Locks\LockManager.cs" />
+    <Compile Include="Locks\ThrottleLock.cs" />
     <Compile Include="Logging\AsynchronousContext.cs" />
     <Compile Include="Logging\DisposeAction.cs" />
     <Compile Include="Logging\ILogBuilder.cs" />

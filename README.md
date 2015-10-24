@@ -37,6 +37,7 @@ In your Package Manager settings add the following package source for developmen
 * Configurable auto retry on error
 * Message processing timeout
 * Scalable via subscriber worker count
+* Supports distributed locks
 
 ### Concepts
 
