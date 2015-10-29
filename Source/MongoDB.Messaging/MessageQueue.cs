@@ -101,7 +101,7 @@ namespace MongoDB.Messaging
         public Task<Message> Publish(Action<PublishQueueBuilder> builder)
         {
             if (builder == null)
-                throw new ArgumentNullException("builder");
+                throw new ArgumentNullException(nameof(builder));
 
             // start a new message with default state
             var message = new Message();
@@ -118,6 +118,44 @@ namespace MongoDB.Messaging
             return container.Repository.Enqueue(message);
         }
 
+        /// <summary>
+        /// Schedule a message for future processing with the specified fluent builder as an asynchronous operation.
+        /// </summary>
+        /// <param name="builder">The fluent builder for creating the message to publish.</param>
+        /// <returns>
+        /// The <see cref="Task"/> representing the asynchronous operation.
+        /// </returns>
+        /// <example>
+        /// Schedule a user message for processing in an hour.
+        /// <code><![CDATA[
+        /// var message = await MessageQueue.Default.Schedule(c => c
+        ///     .Schedule(DateTime.Now.AddHours(1))
+        ///     .Queue("queue-name")
+        ///     .Data(userMessage)
+        /// );
+        /// ]]></code>
+        /// </example>
+        /// <exception cref="System.ArgumentNullException">The builder argument is <c>null</c>.</exception>
+        /// <exception cref="System.InvalidOperationException">Could not find queue to publish message.</exception>
+        public Task<Message> Schedule(Action<ScheduleQueueBuilder> builder)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            // start a new message with default state
+            var message = new Message();
+            message.State = MessageState.Scheduled;
+
+            var publishBuilder = new ScheduleQueueBuilder(_manager, message);
+            builder(publishBuilder);
+
+            var container = publishBuilder.Container;
+            if (container == null)
+                throw new InvalidOperationException("Could not find queue to publish message.");
+
+            // schedule on repository
+            return container.Repository.Schedule(message);
+        }
 
         #region Singleton
         private static readonly Lazy<MessageQueue> _current = new Lazy<MessageQueue>(() => new MessageQueue());

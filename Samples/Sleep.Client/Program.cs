@@ -59,11 +59,17 @@ namespace Sleep.Client
                 }
 
 
-                if (string.Equals(line, "E", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(line, "S", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Schedule Sleep Message...");
+                    ScheduleSleep();
+                }
+                else if (string.Equals(line, "E", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine("Send Sleep Message Error...");
                     SendSleep(1, true);
                 }
+
 
 
                 DebugHelp();
@@ -77,6 +83,7 @@ namespace Sleep.Client
             Console.WriteLine("Sleep Sample Commands.");
             Console.WriteLine("  1  Send x Sleep Messages");
             Console.WriteLine("  E  Send Sleep Message Error");
+            Console.WriteLine("  S  Schedule Sleep Message");
             Console.WriteLine("  Q  Quit");
         }
 
@@ -96,6 +103,24 @@ namespace Sleep.Client
             sleepMessage.Throw = isError;
 
             var message = MessageQueue.Default.Publish(m => m
+                .Queue(SleepMessage.QueueName)
+                .Data(sleepMessage)
+            ).Result;
+
+            Console.WriteLine("Publish Message: '{0}', Id: {1}", message.Description, message.Id);
+        }
+
+        private static void ScheduleSleep(int count = 1, bool isError = false)
+        {
+            int seconds = _random.Next(10, 20);
+
+            var sleepMessage = new SleepMessage();
+            sleepMessage.Time = TimeSpan.FromSeconds(seconds);
+            sleepMessage.Text = string.Format("Schedule Message {0:000}", count);
+            sleepMessage.Throw = isError;
+
+            var message = MessageQueue.Default.Schedule(m => m
+                .Schedule(DateTime.Now.AddMinutes(1))
                 .Queue(SleepMessage.QueueName)
                 .Data(sleepMessage)
             ).Result;

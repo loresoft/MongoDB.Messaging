@@ -80,6 +80,21 @@ namespace MongoDB.Messaging.Tests
             message.Id.Should().NotBeNullOrEmpty();
         }
 
+        [Fact]
+        public async void Schedule()
+        {
+            var userMessage = UserMessage.Tester();
+            var date = DateTime.Now.AddHours(1);
 
+            var message = await MessageQueue.Default.Schedule(c => c
+                .Schedule(date)
+                .Queue("queue-name")
+                .Data(userMessage)
+            );
+
+            message.Id.Should().NotBeNullOrEmpty();
+            message.State.Should().Be(MessageState.Scheduled);
+            message.Scheduled.Should().Be(date);
+        }
     }
 }

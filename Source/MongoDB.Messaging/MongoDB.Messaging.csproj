@@ -68,6 +68,7 @@
     <Compile Include="Fluent\QueueManagerBase.cs" />
     <Compile Include="Fluent\QueueManagerBuilder.cs" />
     <Compile Include="Fluent\QueueNameBuilder.cs" />
+    <Compile Include="Fluent\ScheduleQueueBuilder.cs" />
     <Compile Include="Fluent\SubscriberBuilder.cs" />
     <Compile Include="Fluent\SubscriberQueueBuilder.cs" />
     <Compile Include="Locks\DistributedLock.cs" />
