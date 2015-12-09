@@ -109,5 +109,21 @@
   <Target Name="Build">
     <CallTarget Targets="Package" />
   </Target>
+  <Target Name="Refresh">
+    <!-- Update NuGet dependencies to match package version -->
+    
+    <!-- MongoDB -->
+    <XmlRead XmlFileName="$(SourceFolder)\MongoDB.Messaging\packages.config"
+             XPath="/packages/package[@id='MongoDB.Driver']/@version">
+      <Output TaskParameter="Value" ItemName="MongoDBDriverVersion" />
+    </XmlRead>
 
+    <Message Text="MongoDB.Driver Version: @(MongoDBDriverVersion)"/>
+
+    <XmlUpdate XmlFileName="$(SourceFolder)\MongoDB.Messaging\MongoDB.Messaging.nuspec"
+               Prefix="d" Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+               XPath="/d:package/d:metadata/d:dependencies/d:dependency[@id='MongoDB.Driver']/@version"
+               Value="@(MongoDBDriverVersion)" />
+
+  </Target>
 </Project>
