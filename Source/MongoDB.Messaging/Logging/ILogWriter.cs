@@ -8,9 +8,9 @@ namespace MongoDB.Messaging.Logging
     public interface ILogWriter
     {
         /// <summary>
-        /// Writes the specified LogData to the underlying logger.
+        /// Writes the specified <see cref="LogData"/> to the underlying logger.
         /// </summary>
-        /// <param name="logData">The log data.</param>
+        /// <param name="logData">The log data to write.</param>
         void WriteLog(LogData logData);
     }
 }

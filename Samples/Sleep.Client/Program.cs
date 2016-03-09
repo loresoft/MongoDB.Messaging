@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Messaging;
+using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Service;
+using Sleep.Client.Logging;
 using Sleep.Messages;
 
 namespace Sleep.Client
@@ -15,6 +17,8 @@ namespace Sleep.Client
 
         public static void Main(string[] args)
         {
+            Logger.RegisterWriter(NLogWriter.Default);
+
             ShowVersion();
             Initialize();
             DebugRun(args);

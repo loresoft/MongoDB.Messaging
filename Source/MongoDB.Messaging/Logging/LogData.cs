@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace MongoDB.Messaging.Logging
@@ -9,6 +10,15 @@ namespace MongoDB.Messaging.Logging
     /// </summary>
     public sealed class LogData
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogData"/> class.
+        /// </summary>
+        public LogData()
+        {
+            Logger = "Logger";
+            FormatProvider = CultureInfo.InvariantCulture;
+        }
+
         /// <summary>
         /// Gets or sets the logger name.
         /// </summary>
@@ -40,6 +50,14 @@ namespace MongoDB.Messaging.Logging
         /// The parameters.
         /// </value>
         public object[] Parameters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the message formatter <see langword="delegate"/>.
+        /// </summary>
+        /// <value>
+        /// The message formatter <see langword="delegate"/>.
+        /// </value>
+        public Func<string> MessageFormatter { get; set; }
 
         /// <summary>
         /// Gets or sets the format provider.
@@ -89,6 +107,30 @@ namespace MongoDB.Messaging.Logging
         /// </value>
         public IDictionary<string, object> Properties { get; set; }
 
+
+        /// <summary>
+        /// Formats the log message.
+        /// </summary>
+        /// <returns>The formatted log message.</returns>
+        public string FormatMessage()
+        {
+            try
+            {
+                if (MessageFormatter != null)
+                    return MessageFormatter();
+
+                if (Parameters != null && Parameters.Length > 0)
+                    return string.Format(FormatProvider, Message, Parameters);
+
+            }
+            catch (Exception)
+            {
+                // don't throw error 
+            }
+
+            return Message ?? string.Empty;
+        }
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -117,15 +159,44 @@ namespace MongoDB.Messaging.Logging
                     .Append("] ");
             }
 
-            if (Parameters != null && Parameters.Length > 0)
-                message.AppendFormat(FormatProvider, Message, Parameters);
-            else
-                message.Append(Message);
+            try
+            {
+                if (MessageFormatter != null)
+                    message.Append(MessageFormatter());
+                else if (Parameters != null && Parameters.Length > 0)
+                    message.AppendFormat(FormatProvider, Message, Parameters);
+                else
+                    message.Append(Message);
 
-            if (Exception != null)
-                message.Append(" ").Append(Exception);
+                if (Exception != null)
+                    message.Append(" ").Append(Exception);
+
+            }
+            catch (Exception)
+            {
+                // don't throw error 
+            }
 
             return message.ToString();
+        }
+
+
+        /// <summary>
+        /// Reset all properties back to default.
+        /// </summary>
+        internal void Reset()
+        {
+            Logger = "Logger";
+            LogLevel = LogLevel.Trace;
+            Message = null;
+            Parameters = null;
+            MessageFormatter = null;
+            FormatProvider = CultureInfo.InvariantCulture;
+            Exception = null;
+            MemberName = null;
+            FilePath = null;
+            LineNumber = 0;
+            Properties?.Clear();
         }
     }
 }

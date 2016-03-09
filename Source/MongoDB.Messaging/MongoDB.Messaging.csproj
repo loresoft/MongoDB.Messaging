@@ -74,6 +74,7 @@
     <Compile Include="Locks\LockManager.cs" />
     <Compile Include="Locks\ThrottleLock.cs" />
     <Compile Include="Logging\AsynchronousContext.cs" />
+    <Compile Include="Logging\DelegateLogWriter.cs" />
     <Compile Include="Logging\DisposeAction.cs" />
     <Compile Include="Logging\ILogBuilder.cs" />
     <Compile Include="Logging\ILogger.cs" />
@@ -83,7 +84,10 @@
     <Compile Include="Logging\LogData.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerCreateBuilder.cs" />
+    <Compile Include="Logging\LoggerExtensions.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\ObjectPool.cs" />
     <Compile Include="Logging\PropertyContext.cs" />
     <Compile Include="Logging\TraceLogWriter.cs" />
     <Compile Include="Subscription\IMessageRetry.cs" />

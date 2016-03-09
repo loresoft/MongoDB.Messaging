@@ -11,25 +11,35 @@ namespace MongoDB.Messaging.Logging
     public sealed class LogBuilder : ILogBuilder
     {
         private readonly LogData _data;
-        private readonly Action<LogData> _writer;
+        private readonly ILogWriter _writer;
+        private readonly IObjectPool<LogBuilder> _objectPool;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogBuilder" /> class.
         /// </summary>
-        /// <param name="logLevel">The starting trace level.</param>
         /// <param name="writer">The delegate to write logs to.</param>
-        /// <exception cref="System.ArgumentNullException">writer</exception>
-        public LogBuilder(LogLevel logLevel, Action<LogData> writer)
+        /// <param name="objectPool">The object pool.</param>
+        /// <exception cref="System.ArgumentNullException"><paramref name="writer" /> is <see langword="null" />.</exception>
+        internal LogBuilder(ILogWriter writer, IObjectPool<LogBuilder> objectPool)
+            : this(writer)
+        {
+           _objectPool = objectPool;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogBuilder" /> class.
+        /// </summary>
+        /// <param name="writer">The delegate to write logs to.</param>
+        /// <exception cref="System.ArgumentNullException"><paramref name="writer" /> is <see langword="null" />.</exception>
+        public LogBuilder(ILogWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException("writer");
 
             _writer = writer;
             _data = new LogData();
-            _data.LogLevel = logLevel;
-            _data.FormatProvider = CultureInfo.InvariantCulture;
-            _data.Logger = typeof(Logger).FullName;
         }
+
 
         /// <summary>
         /// Gets the log data that is being built.
@@ -86,6 +96,17 @@ namespace MongoDB.Messaging.Logging
         {
             _data.Message = message;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the log message on the logging event using the return value of specified <see langword="delegate" />.
+        /// </summary>
+        /// <param name="messageFactory">The <see langword="delegate" /> to generate the method.</param>
+        /// <returns></returns>
+        public ILogBuilder Message(Func<string> messageFactory)
+        {
+            _data.MessageFormatter = messageFactory;
             return this;
         }
 
@@ -211,6 +232,17 @@ namespace MongoDB.Messaging.Logging
             return this;
         }
 
+
+        /// <summary>
+        /// Reset log data to default values.
+        /// </summary>
+        /// <returns></returns>
+        internal ILogBuilder Reset()
+        {
+            _data.Reset();
+            return this;
+        }
+
         /// <summary>
         /// Writes the log event to the underlying logger.
         /// </summary>
@@ -229,7 +261,10 @@ namespace MongoDB.Messaging.Logging
             if (callerLineNumber != 0)
                 _data.LineNumber = callerLineNumber;
 
-            _writer(_data);
+            _writer.WriteLog(_data);
+
+            // return to object pool
+            _objectPool?.Free(this);
         }
 
 
@@ -270,6 +305,5 @@ namespace MongoDB.Messaging.Logging
 
             Write(callerMemberName, callerFilePath, callerLineNumber);
         }
-
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using MongoDB.Messaging;
+using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Service;
 using Sleep.Messages;
+using Sleep.Service.Logging;
 
 namespace Sleep.Service
 {
@@ -11,6 +13,8 @@ namespace Sleep.Service
 
         public static void Main(string[] args)
         {
+            Logger.RegisterWriter(NLogWriter.Default);
+
             ShowVersion();
             Initialize();
             DebugRun(args);

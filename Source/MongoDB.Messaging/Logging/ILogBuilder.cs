@@ -45,6 +45,13 @@ namespace MongoDB.Messaging.Logging
         ILogBuilder Message(string message);
 
         /// <summary>
+        /// Sets the log message on the logging event using the return value of specified <see langword="delegate" />.
+        /// </summary>
+        /// <param name="messageFactory">The <see langword="delegate" /> to generate the method.</param>
+        /// <returns></returns>
+        ILogBuilder Message(Func<string> messageFactory);
+
+        /// <summary>
         /// Sets the log message and parameters for formating on the logging event.
         /// </summary>
         /// <param name="format">A composite format string.</param>

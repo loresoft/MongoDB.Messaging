@@ -6,36 +6,37 @@ namespace Sleep.Service.Logging
     /// <summary>
     /// NLog log writer adapter 
     /// </summary>
-    public static class NLogWriter
+    public class NLogWriter : ILogWriter
     {
         /// <summary>
         /// Writes the specified LogData to NLog.
         /// </summary>
         /// <param name="logData">The log data.</param>
-        public static void WriteLog(LogData logData)
+        public void WriteLog(LogData logData)
         {
-            var logEvent = logData.ToLogEvent();
+            var logEvent = ToLogEvent(logData);
             var name = logData.Logger ?? typeof(NLogWriter).FullName;
 
             var logger = global::NLog.LogManager.GetLogger(name);
             logger.Log(logEvent);
         }
 
+
         /// <summary>
         /// Converts the LogData to LogEventInfo.
         /// </summary>
         /// <param name="logData">The log data.</param>
         /// <returns></returns>
-        public static global::NLog.LogEventInfo ToLogEvent(this LogData logData)
+        public static global::NLog.LogEventInfo ToLogEvent(LogData logData)
         {
             var logEvent = new global::NLog.LogEventInfo();
             logEvent.TimeStamp = DateTime.Now;
-            logEvent.Level = logData.LogLevel.ToLogLevel();
+            logEvent.Level = ToLogLevel(logData.LogLevel);
             logEvent.LoggerName = logData.Logger;
             logEvent.Exception = logData.Exception;
             logEvent.FormatProvider = logData.FormatProvider;
-            logEvent.Message = logData.Message;
             logEvent.Parameters = logData.Parameters;
+            logEvent.Message = FormatMessage(logData);
 
             if (logData.Properties != null)
                 foreach (var property in logData.Properties)
@@ -53,7 +54,7 @@ namespace Sleep.Service.Logging
         /// </summary>
         /// <param name="logLevel">The log level.</param>
         /// <returns></returns>
-        public static global::NLog.LogLevel ToLogLevel(this LogLevel logLevel)
+        public static global::NLog.LogLevel ToLogLevel(LogLevel logLevel)
         {
             switch (logLevel)
             {
@@ -66,20 +67,40 @@ namespace Sleep.Service.Logging
 
             return global::NLog.LogLevel.Debug;
         }
-    }
 
-    /// <summary>
-    /// NLog writer adapter
-    /// </summary>
-    public class NLogAdapter : ILogWriter
-    {
-        /// <summary>
-        /// Writes the log.
-        /// </summary>
-        /// <param name="logData">The log data.</param>
-        public void WriteLog(LogData logData)
+
+        private static string FormatMessage(LogData logData)
         {
-            NLogWriter.WriteLog(logData);
+            string message = null;
+            try
+            {
+                message = logData.MessageFormatter != null
+                    ? logData.MessageFormatter()
+                    : logData.Message;
+            }
+            catch (Exception)
+            {
+                // don't throw error
+            }
+
+            return message ?? string.Empty;
         }
+
+        private static readonly Lazy<NLogWriter> _current = new Lazy<NLogWriter>(() => new NLogWriter());
+
+        /// <summary>
+        /// Gets the current singleton instance of <see cref="NLogWriter"/>.
+        /// </summary>
+        /// <value>The current singleton instance.</value>
+        /// <remarks>
+        /// An instance of <see cref="NLogWriter"/> wont be created until the very first 
+        /// call to the sealed class. This is a CLR optimization that
+        /// provides a properly lazy-loading singleton. 
+        /// </remarks>
+        public static NLogWriter Default
+        {
+            get { return _current.Value; }
+        }
+
     }
 }

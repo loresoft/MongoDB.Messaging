@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -12,8 +10,9 @@ namespace MongoDB.Messaging.Logging
     /// </summary>
     public sealed class Logger : ILogger
     {
-        private static Action<LogData> _logAction;
         private static ILogWriter _logWriter;
+
+        private static readonly ObjectPool<LogBuilder> _objectPool;
 
         // only create if used
 #if !PORTABLE
@@ -30,18 +29,16 @@ namespace MongoDB.Messaging.Logging
         /// </summary>
         static Logger()
         {
-            _logAction = DebugWrite;
-
             _globalProperties = new Lazy<IPropertyContext>(CreateGlobal);
 #if !PORTABLE
             _threadProperties = new ThreadLocal<IPropertyContext>(CreateLocal);
             _asyncProperties = new Lazy<IPropertyContext>(CreateAsync);
 
             _logWriter = new TraceLogWriter();
-            _logAction = _logWriter.WriteLog;
 #else
-            _logAction = DebugWrite;
+            _logWriter = new DelegateLogWriter();            
 #endif
+            _objectPool = new ObjectPool<LogBuilder>(() => new LogBuilder(_logWriter, _objectPool), 25);
         }
 
         /// <summary>
@@ -134,8 +131,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Log(LogLevel logLevel)
         {
-            var builder = Log(logLevel);
-            return MergeDefaults(builder);
+            return CreateBuilder(logLevel);
         }
 
 
@@ -165,8 +161,11 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Log(Func<LogLevel> logLevelFactory)
         {
-            var builder = Log(logLevelFactory);
-            return MergeDefaults(builder);
+            var logLevel = (logLevelFactory != null)
+                ? logLevelFactory()
+                : LogLevel.Debug;
+
+            return CreateBuilder(logLevel);
         }
 
 
@@ -188,8 +187,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Trace()
         {
-            var builder = Trace();
-            return MergeDefaults(builder);
+            return CreateBuilder(LogLevel.Trace);
         }
 
 
@@ -211,8 +209,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Debug()
         {
-            var builder = Debug();
-            return MergeDefaults(builder);
+            return CreateBuilder(LogLevel.Debug);
         }
 
 
@@ -234,8 +231,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Info()
         {
-            var builder = Info();
-            return MergeDefaults(builder);
+            return CreateBuilder(LogLevel.Info);
         }
 
 
@@ -257,8 +253,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Warn()
         {
-            var builder = Warn();
-            return MergeDefaults(builder);
+            return CreateBuilder(LogLevel.Warn);
         }
 
 
@@ -280,8 +275,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Error()
         {
-            var builder = Error();
-            return MergeDefaults(builder);
+            return CreateBuilder(LogLevel.Error);
         }
 
 
@@ -303,8 +297,7 @@ namespace MongoDB.Messaging.Logging
         /// </returns>
         ILogBuilder ILogger.Fatal()
         {
-            var builder = Fatal();
-            return MergeDefaults(builder);
+            return CreateBuilder(LogLevel.Fatal);
         }
 
 
@@ -317,8 +310,8 @@ namespace MongoDB.Messaging.Logging
             if (writer == null)
                 throw new ArgumentNullException("writer");
 
-            var current = _logAction;
-            Interlocked.CompareExchange(ref _logAction, writer, current);
+            var logWriter = new DelegateLogWriter(writer);
+            RegisterWriter(logWriter);
         }
 
         /// <summary>
@@ -331,10 +324,16 @@ namespace MongoDB.Messaging.Logging
             if (writer == null)
                 throw new ArgumentNullException("writer");
 
-            var current = _logWriter;
-            Interlocked.CompareExchange(ref _logWriter, writer, current);
+            if (writer.Equals(_logWriter))
+                return;
 
-            RegisterWriter(_logWriter.WriteLog);
+            var current = _logWriter;
+            if (Interlocked.CompareExchange(ref _logWriter, writer, current) != current)
+                return;
+
+            // clear object pool
+            _objectPool.Clear();
+
         }
 
 
@@ -383,45 +382,63 @@ namespace MongoDB.Messaging.Logging
         }
 
 
-        private static Action<LogData> ResolveWriter()
-        {
-            var writer = _logAction ?? DebugWrite;
-            return writer;
-        }
-
-        private static void DebugWrite(LogData logData)
-        {
-            System.Diagnostics.Debug.WriteLine(logData);
-        }
-
         private static ILogBuilder CreateBuilder(LogLevel logLevel, string callerFilePath)
         {
             string name = GetName(callerFilePath);
 
-            var writer = ResolveWriter();
-            var builder = new LogBuilder(logLevel, writer);
-            builder.Logger(name);
+            var builder = _objectPool.Allocate();
+            builder
+                .Reset()
+                .Level(logLevel)
+                .Logger(name);
 
             MergeProperties(builder);
 
             return builder;
         }
 
+        private ILogBuilder CreateBuilder(LogLevel logLevel)
+        {
+            var builder = _objectPool.Allocate();
+            builder
+                .Reset()
+                .Level(logLevel);
+
+            MergeProperties(builder);
+            MergeDefaults(builder);
+
+            return builder;
+        }
+
+
         private static string GetName(string path)
         {
+            path = GetFileName(path);
             if (path == null)
-                return string.Empty;
-
-            var parts = path.Split('\\', '/');
-            var p = parts.LastOrDefault();
-            if (p == null)
                 return null;
 
-            int length;
-            if ((length = p.LastIndexOf('.')) == -1)
-                return p;
+            int i;
+            if ((i = path.LastIndexOf('.')) != -1)
+                return path.Substring(0, i);
 
-            return p.Substring(0, length);
+            return path;
+        }
+
+        private static string GetFileName(string path)
+        {
+            if (path == null)
+                return path;
+
+            int length = path.Length;
+            for (int i = length; --i >= 0;)
+            {
+                char ch = path[i];
+                if (ch == '\\' || ch == '/' || ch == ':')
+                    return path.Substring(i + 1, length - i - 1);
+
+            }
+
+            return path;
         }
 
 #if !PORTABLE
