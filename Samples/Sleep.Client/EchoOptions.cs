@@ -12,7 +12,7 @@ namespace Sleep.Client
         [Option("when", HelpText = "The number minutes to delay processing")]
         public int When { get; set; }
 
-        [Option("throw", HelpText = "Throw an error while processing",)]
+        [Option("throw", HelpText = "Throw an error while processing")]
         public bool Throw { get; set; }
 
         [Option("message", HelpText = "The message to echo")]
