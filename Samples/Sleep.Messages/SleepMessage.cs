@@ -18,7 +18,7 @@ namespace Sleep.Messages
 
         public override string ToString()
         {
-            return string.Format("Sleep Message Text: {0}, Throw: {1}, Time: {2}", Text, Throw, Time);
+            return $"Sleep Message Text: {Text}, Throw: {Throw}, Time: {Time}";
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CommandLine;
 using MongoDB.Messaging;
 using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Service;
@@ -14,14 +15,14 @@ namespace Sleep.Client
     public class Program
     {
         private static readonly Random _random = new Random();
+        private static int _counter = 1;
 
         public static void Main(string[] args)
         {
             Logger.RegisterWriter(NLogWriter.Default);
 
-            ShowVersion();
             Initialize();
-            DebugRun(args);
+            DebugRun();
         }
 
         private static void Initialize()
@@ -35,101 +36,95 @@ namespace Sleep.Client
             );
         }
 
-        private static void ShowVersion()
+        private static void DebugRun()
         {
-            Console.WriteLine("{0} {1}", ThisAssembly.AssemblyProduct, ThisAssembly.AssemblyFileVersion);
-            Console.WriteLine(ThisAssembly.AssemblyCopyright);
-            Console.WriteLine();
-        }
+            bool processing = true;
+            bool wait = false;
 
-        private static void DebugRun(string[] args)
-        {
-            DebugHelp();
-
-            while (true)
+            while (processing)
             {
-                string line = Console.In.ReadLine() ?? string.Empty;
-                if (string.Equals(line, "Q", StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
+                string commandLine = wait ? Console.In.ReadLine() : string.Empty;
+                if (string.IsNullOrEmpty(commandLine))
+                    commandLine = "help";
 
-                int count;
+                var args = NativeMethods.CommandLineToArgs(commandLine);
 
-                if (int.TryParse(line, out count))
-                {
-                    Console.WriteLine("Send {0}x Sleep Messages...", count);
-                    SendMany(count);
-                }
+                Parser.Default.ParseArguments<SleepOptions, EchoOptions, QuitOptions>(args)
+                  .WithParsed<SleepOptions>(opts => SendSleep(opts))
+                  .WithParsed<EchoOptions>(opts => SendEcho(opts))
+                  .WithParsed<QuitOptions>(opts => processing = false);
 
 
-                if (string.Equals(line, "S", StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("Schedule Sleep Message...");
-                    ScheduleSleep();
-                }
-                else if (string.Equals(line, "E", StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("Send Sleep Message Error...");
-                    SendSleep(1, true);
-                }
-
-
-
-                DebugHelp();
+                wait = true;
             }
         }
 
-
-
-        private static void DebugHelp()
+        private static void SendEcho(EchoOptions opts)
         {
-            Console.WriteLine("Sleep Sample Commands.");
-            Console.WriteLine("  1  Send x Sleep Messages");
-            Console.WriteLine("  E  Send Sleep Message Error");
-            Console.WriteLine("  S  Schedule Sleep Message");
-            Console.WriteLine("  Q  Quit");
-        }
+            int max = Math.Max(1, opts.Count);
 
-        private static void SendMany(int max = 1)
-        {
             for (int i = 1; i <= max; i++)
-                SendSleep(i);
+            {
+                var sleepMessage = new EchoMessage();
+                sleepMessage.Text = $"Echo Message {i:000}: {opts.Message}";
+                sleepMessage.Throw = opts.Throw;
+
+                if (opts.When > 0)
+                {
+                    var message = MessageQueue.Default.Schedule(m => m
+                        .Schedule(DateTime.Now.AddMinutes(opts.When))
+                        .Queue(EchoMessage.QueueName)
+                        .Data(sleepMessage)
+                    ).Result;
+
+                    Console.WriteLine("Schedule Message: '{0}', Id: {1}", message.Description, message.Id);
+                }
+                else
+                {
+                    var message = MessageQueue.Default.Publish(m => m
+                        .Queue(EchoMessage.QueueName)
+                        .Data(sleepMessage)
+                    ).Result;
+
+                    Console.WriteLine("Publish Message: '{0}', Id: {1}", message.Description, message.Id);
+                }
+            }
+
         }
 
-        private static void SendSleep(int count = 1, bool isError = false)
+        private static void SendSleep(SleepOptions opts)
         {
-            int seconds = _random.Next(10, 20);
+            int max = Math.Max(1, opts.Count);
 
-            var sleepMessage = new SleepMessage();
-            sleepMessage.Time = TimeSpan.FromSeconds(seconds);
-            sleepMessage.Text = string.Format("Sleep Message {0:000}", count);
-            sleepMessage.Throw = isError;
+            for (int i = 1; i <= max; i++)
+            {
+                int seconds = _random.Next(10, 20);
 
-            var message = MessageQueue.Default.Publish(m => m
-                .Queue(SleepMessage.QueueName)
-                .Data(sleepMessage)
-            ).Result;
+                var sleepMessage = new SleepMessage();
+                sleepMessage.Time = TimeSpan.FromSeconds(seconds);
+                sleepMessage.Text = $"Sleep Message {i:000}";
+                sleepMessage.Throw = opts.Throw;
 
-            Console.WriteLine("Publish Message: '{0}', Id: {1}", message.Description, message.Id);
-        }
+                if (opts.When > 0)
+                {
+                    var message = MessageQueue.Default.Schedule(m => m
+                        .Schedule(DateTime.Now.AddMinutes(opts.When))
+                        .Queue(SleepMessage.QueueName)
+                        .Data(sleepMessage)
+                    ).Result;
 
-        private static void ScheduleSleep(int count = 1, bool isError = false)
-        {
-            int seconds = _random.Next(10, 20);
+                    Console.WriteLine("Schedule Message: '{0}', Id: {1}", message.Description, message.Id);
+                }
+                else
+                {
+                    var message = MessageQueue.Default.Publish(m => m
+                        .Queue(SleepMessage.QueueName)
+                        .Data(sleepMessage)
+                    ).Result;
 
-            var sleepMessage = new SleepMessage();
-            sleepMessage.Time = TimeSpan.FromSeconds(seconds);
-            sleepMessage.Text = string.Format("Schedule Message {0:000}", count);
-            sleepMessage.Throw = isError;
-
-            var message = MessageQueue.Default.Schedule(m => m
-                .Schedule(DateTime.Now.AddMinutes(1))
-                .Queue(SleepMessage.QueueName)
-                .Data(sleepMessage)
-            ).Result;
-
-            Console.WriteLine("Publish Message: '{0}', Id: {1}", message.Description, message.Id);
+                    Console.WriteLine("Publish Message: '{0}', Id: {1}", message.Description, message.Id);
+                }
+            }
         }
     }
 }

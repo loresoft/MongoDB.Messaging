@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-
+using MongoDB.Bson;
+using MongoDB.Messaging.Change;
 using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Configuration;
 
@@ -10,7 +12,7 @@ namespace MongoDB.Messaging.Service
     /// <summary>
     /// A message queue processor
     /// </summary>
-    public class MessageProcessor : IMessageProcessor
+    public class MessageProcessor : IMessageProcessor, IHandleChange
     {
         private readonly Lazy<IList<IMessageWorker>> _workers;
         private readonly IMessageService _service;
@@ -18,7 +20,8 @@ namespace MongoDB.Messaging.Service
         private readonly IQueueConfiguration _configuration;
 
         private int _activeWorkers;
-        
+        private int _workerIndex = 0;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageProcessor"/> class.
@@ -31,6 +34,13 @@ namespace MongoDB.Messaging.Service
             _service = service;
             _container = container;
             _configuration = container.Configuration;
+
+            if (!container.Configuration.Trigger)
+                return;
+
+            // subscribe to notifications
+            var filter = container.Repository.Collection.CollectionNamespace.FullName;
+            service.Notifier.Subscribe(this, filter);
         }
 
 
@@ -55,7 +65,7 @@ namespace MongoDB.Messaging.Service
         {
             get { return ActiveWorkers > 0; }
         }
-        
+
         /// <summary>
         /// The number active workers.
         /// </summary>
@@ -166,6 +176,69 @@ namespace MongoDB.Messaging.Service
         }
 
 
+        /// <summary>
+        /// Handle a MongoDB change record.
+        /// </summary>
+        /// <param name="change">The change record.</param>
+        /// <remarks>
+        /// This method is called on a thread-pool background thread.
+        /// </remarks>
+        void IHandleChange.HandleChange(ChangeRecord change)
+        {
+            // workers not started
+            if (!_workers.IsValueCreated)
+                return;
+
+            // look for state changed to queued
+            if (!IsQueued(change))
+                return;
+
+            // find first free worker and trigger work
+            var worker = NextWorker();
+            if (worker == null)
+            {
+                Logger.Trace()
+                    .Message("Trigger worker: All workers busy")
+                    .Write();
+
+                return;
+            }
+
+            Logger.Trace()
+                .Message("Trigger worker: {0}", worker.Name)
+                .Write();
+
+            worker.Trigger();
+        }
+
+
+        private IMessageWorker NextWorker()
+        {
+            if (!_workers.IsValueCreated)
+                return null;
+
+            var workers = _workers.Value;
+
+            // round robin through workers
+            int attempt = 0;
+            while (attempt < workers.Count)
+            {
+                if (_workerIndex >= workers.Count)
+                    Interlocked.Exchange(ref _workerIndex, 0);
+
+                int index = _workerIndex;
+                Interlocked.Increment(ref _workerIndex);
+
+                var worker = workers[index];
+                if (!worker.IsBusy && worker is MessageWorker)
+                    return worker;
+
+                attempt++;
+            }
+
+            return null;
+        }
+
         private IList<IMessageWorker> CreateWorkers()
         {
             var workers = new List<IMessageWorker>();
@@ -193,5 +266,45 @@ namespace MongoDB.Messaging.Service
             return workers;
         }
 
+
+        private static bool IsQueued(ChangeRecord change)
+        {
+            if (change?.Document == null)
+                return false;
+
+            // only insert or update
+            if (change.Operation == "i")
+                return IsInsertQueued(change);
+
+            if (change.Operation == "u")
+                return IsUpdateQueued(change);
+
+            return false;
+        }
+
+        private static bool IsQueued(BsonDocument document)
+        {
+            if (!document.Contains("State"))
+                return false;
+
+            return document["State"] == "Queued";
+        }
+
+        private static bool IsInsertQueued(ChangeRecord change)
+        {
+            return IsQueued(change.Document);
+        }
+
+        private static bool IsUpdateQueued(ChangeRecord change)
+        {
+            if (change.Document == null)
+                return false;
+
+            if (!change.Document.Contains("$set"))
+                return false;
+
+            var document = change.Document["$set"].AsBsonDocument;
+            return IsQueued(document);
+        }
     }
 }

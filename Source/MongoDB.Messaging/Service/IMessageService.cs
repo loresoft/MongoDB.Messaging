@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MongoDB.Messaging.Change;
 using MongoDB.Messaging.Configuration;
 
 namespace MongoDB.Messaging.Service
@@ -28,6 +29,14 @@ namespace MongoDB.Messaging.Service
         /// The number active processes
         /// </summary>
         int ActiveProcesses { get; }
+
+        /// <summary>
+        /// Gets the change notifier service.
+        /// </summary>
+        /// <value>
+        /// The change notifier service.
+        /// </value>
+        ChangeNotifier Notifier { get; }
 
 
         /// <summary>

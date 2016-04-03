@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using MongoDB.Messaging.Change;
 using MongoDB.Messaging.Configuration;
 using MongoDB.Messaging.Logging;
 
@@ -13,6 +14,7 @@ namespace MongoDB.Messaging.Service
     public class MessageService : IMessageService
     {
         private readonly Lazy<IList<IMessageProcessor>> _processors;
+        private readonly Lazy<ChangeNotifier> _notifier;
         private readonly IQueueManager _manager;
 
         private int _activeProcesses;
@@ -37,6 +39,7 @@ namespace MongoDB.Messaging.Service
                 throw new ArgumentNullException("manager");
 
             _processors = new Lazy<IList<IMessageProcessor>>(CreateProcesses);
+            _notifier = new Lazy<ChangeNotifier>(CreateNotifier);
             _manager = manager;
             _activeProcesses = 0;
 
@@ -73,6 +76,17 @@ namespace MongoDB.Messaging.Service
             get { return _activeProcesses; }
         }
 
+        /// <summary>
+        /// Gets the change notifier service.
+        /// </summary>
+        /// <value>
+        /// The change notifier service.
+        /// </value>
+        public ChangeNotifier Notifier
+        {
+            get { return _notifier.Value; }
+        }
+
 
         /// <summary>
         /// Start the service and all the <see cref="Processors" />.
@@ -80,6 +94,8 @@ namespace MongoDB.Messaging.Service
         public void Start()
         {
             _activeProcesses = 0;
+
+            bool notify = false;
 
             foreach (var process in _processors.Value)
             {
@@ -94,7 +110,15 @@ namespace MongoDB.Messaging.Service
                         .Exception(ex)
                         .Write();
                 }
+
+                // track if anyone has trigger set
+                if (process.Configuration.Trigger)
+                    notify = true;
             }
+
+            // start notifier
+            if (notify)
+                _notifier.Value.Start();
         }
 
         /// <summary>
@@ -107,6 +131,9 @@ namespace MongoDB.Messaging.Service
 
             foreach (var monitor in _processors.Value)
                 monitor.Stop();
+
+            if (_notifier.IsValueCreated)
+                _notifier.Value.Stop();
 
             // Safe shutdown, wait for active processes
             DateTimeOffset timeout = DateTimeOffset.Now.AddSeconds(30);
@@ -143,5 +170,14 @@ namespace MongoDB.Messaging.Service
 
             return list;
         }
+
+        private ChangeNotifier CreateNotifier()
+        {
+            var connectionName = _manager.NotificationConnection ?? _manager.ConnectionName;
+            var notifier = new ChangeNotifier(connectionName);
+
+            return notifier;
+        }
+
     }
 }

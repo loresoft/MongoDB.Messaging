@@ -42,6 +42,7 @@
     <Compile Include="..\..\Source\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="EchoMessage.cs" />
     <Compile Include="SleepMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

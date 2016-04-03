@@ -17,6 +17,14 @@ namespace MongoDB.Messaging.Configuration
         /// The name of the connection.
         /// </value>
         string ConnectionName { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the name of the connection string for change notification.
+        /// </summary>
+        /// <value>
+        /// The name of the connection for change notification.
+        /// </value>
+        string NotificationConnection { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the service control queue.

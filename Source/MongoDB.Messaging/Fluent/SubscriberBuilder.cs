@@ -154,5 +154,18 @@ namespace MongoDB.Messaging.Fluent
             Configuration.HealthCheck = value;
             return this;
         }
+
+
+        /// <summary>
+        /// Sets weather the worker is triggered from a change notification.
+        /// </summary>
+        /// <param name="value"><c>true</c> to trigger worker on change; otherwise <c>false</c>.</param>
+        /// <returns></returns>
+        public SubscriberBuilder Trigger(bool value = true)
+        {
+            Configuration.Trigger = value;
+
+            return this;
+        }
     }
 }

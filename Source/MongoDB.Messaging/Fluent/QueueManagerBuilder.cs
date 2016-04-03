@@ -35,6 +35,19 @@ namespace MongoDB.Messaging.Fluent
         }
 
         /// <summary>
+        /// Sets the name of the notification connection string.
+        /// </summary>
+        /// <param name="name">The name of the notification connection string.</param>
+        /// <returns>
+        /// A fluent <see langword="interface" /> for the queue manager.
+        /// </returns>
+        public QueueManagerBuilder Notification(string name)
+        {
+            Manager.NotificationConnection = name;
+            return this;
+        }
+
+        /// <summary>
         /// Sets the name of the service control queue.
         /// </summary>
         /// <param name="name">The name of the service control queue.</param>
@@ -76,5 +89,6 @@ namespace MongoDB.Messaging.Fluent
 
             return this;
         }
+
     }
 }

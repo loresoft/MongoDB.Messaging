@@ -140,5 +140,13 @@ namespace MongoDB.Messaging.Configuration
         /// The name lock collection.
         /// </value>
         string LockCollection { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating weather the worker is triggered from a change notification.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> to trigger worker on change; otherwise <c>false</c>.
+        /// </value>
+        bool Trigger { get; set; }
     }
 }

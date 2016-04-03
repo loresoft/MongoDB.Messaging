@@ -78,6 +78,11 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         void Stop();
 
+        /// <summary>
+        /// Trigger immediate processing of the queue.
+        /// </summary>
+        void Trigger();
+
 
         /// <summary>
         /// Signal that the worker has begun.

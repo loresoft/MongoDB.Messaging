@@ -31,7 +31,16 @@ namespace Sleep.Service
                 .Subscribe(s => s
                     .Queue(SleepMessage.QueueName)
                     .Handler<SleepHandler>()
+                    .PollTime(TimeSpan.FromMinutes(5))
                     .Workers(4)
+                    .Trigger()
+                )
+                .Subscribe(s => s
+                    .Queue(EchoMessage.QueueName)
+                    .Handler<EchoHandler>()
+                    .PollTime(TimeSpan.FromMinutes(5))
+                    .Workers(1)
+                    .Trigger()
                 )
             );
 

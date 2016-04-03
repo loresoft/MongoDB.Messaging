@@ -81,6 +81,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\DateTimeExtensionsTests.cs" />
     <Compile Include="Locks\DistributedLockTests.cs" />
     <Compile Include="Locks\ThrottleLockTests.cs" />
     <Compile Include="Logging\NLogWriter.cs" />

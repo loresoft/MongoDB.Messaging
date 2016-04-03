@@ -169,8 +169,16 @@ namespace MongoDB.Messaging.Service
             StopTimer();
         }
 
+        /// <summary>
+        /// Trigger immediate processing of the queue.
+        /// </summary>
+        public void Trigger()
+        {
+            StartTimer(TimeSpan.Zero);
+        }
 
-         /// <summary>
+
+        /// <summary>
         /// Signal that a worker has begun.
         /// </summary>
         public void BeginWork()
@@ -206,8 +214,7 @@ namespace MongoDB.Messaging.Service
                 nextRun = _random.Next(low, high);
             }
 
-            // timer can't be faster then 500 ms
-            nextRun = Math.Max(500, nextRun);
+            nextRun = Math.Max(0, nextRun);
 
             // timer only fires once, up to call back to start timer again
             _pollTimer.Change(nextRun, Timeout.Infinite);

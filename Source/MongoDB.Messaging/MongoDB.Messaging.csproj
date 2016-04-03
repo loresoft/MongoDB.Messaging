@@ -57,7 +57,14 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Change\ChangeRecord.cs" />
+    <Compile Include="Change\ChangeNotifier.cs" />
+    <Compile Include="Change\IHandleChange.cs" />
+    <Compile Include="Change\ISubscription.cs" />
+    <Compile Include="Change\Subscription.cs" />
     <Compile Include="Configuration\IQueueManager.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Fluent\MessageBuilderBase.cs" />
     <Compile Include="Fluent\PublishQueueBuilder.cs" />
     <Compile Include="Fluent\QueueConfigurationBase.cs" />
