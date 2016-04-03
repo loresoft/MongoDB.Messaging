@@ -8,8 +8,6 @@ The MongoDB Messaging library is a lightweight queue pub/sub processing library 
 
 [![NuGet Version](https://img.shields.io/nuget/v/MongoDB.Messaging.svg?style=flat-square)](https://www.nuget.org/packages/MongoDB.Messaging/)
 
-[![NuGet Version](https://img.shields.io/nuget/dt/MongoDB.Messaging.svg?style=flat-square)](https://www.nuget.org/packages/MongoDB.Messaging/)
-
 ## Download
 
 The MongoDB.Messaging library is available on nuget.org via package name `MongoDB.Messaging`.
@@ -34,6 +32,7 @@ In your Package Manager settings add the following package source for developmen
 * Self creating and cleaning of Queues
 * Configurable message expiration
 * Generic data payload
+* Trigger processing from oplog change monitoring
 * Configurable auto retry on error
 * Message processing timeout
 * Scalable via subscriber worker count
@@ -148,6 +147,19 @@ MessageQueue.Default.Configure(c => c
     )
 );
 ```
+To speed up processing, you can monitor the oplog for changes to trigger processing
+
+```c#
+MessageQueue.Default.Configure(c => c
+    .Connection("MongoMessaging")
+    .Subscribe(s => s
+        .Queue(SleepMessage.QueueName)
+        .Handler<SleepHandler>()
+        .Workers(4)
+        .Trigger()
+    )
+);
+```
 
 #### Properties
 
@@ -164,6 +176,7 @@ MessageQueue.Default.Configure(c => c
 **Retry** is a class that implements IMessageRetry.  IMessageRetry controls if an error message should be retried.   
 **Timeout** is the amount of time before a processing message times out.   
 **TimeoutAction** is how to handle timed out messages. Options are Fail or Retry.   
+**Trigger** to enable monitoring of the oplog for changes to trigger processing.
 
 ## Message Service
 
