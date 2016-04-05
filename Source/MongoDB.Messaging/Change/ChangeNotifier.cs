@@ -185,13 +185,13 @@ namespace MongoDB.Messaging.Change
                     .Write();
 
                 // Start the cursor and wait for the initial response
-                using (var cursor = await collection.FindAsync(filter, options).ConfigureAwait(false))
+                using (var cursor = await collection.FindAsync(filter, options, token).ConfigureAwait(false))
                 {
                     await cursor.ForEachAsync(document =>
                     {
                         LastNotification = document.Timestamp;
                         Publish(document);
-                    }).ConfigureAwait(false);
+                    }, token).ConfigureAwait(false);
                 }
 
                 // cursor died, restart it
