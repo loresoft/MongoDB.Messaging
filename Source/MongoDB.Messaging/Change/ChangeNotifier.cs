@@ -39,14 +39,14 @@ namespace MongoDB.Messaging.Change
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeNotifier"/> class.
         /// </summary>
-        /// <param name="client">The MongoClient connection.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="client"/> is <see langword="null" />.</exception>
-        public ChangeNotifier(MongoClient client)
+        /// <param name="mongoClient">The MongoClient connection.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="mongoClient"/> is <see langword="null" />.</exception>
+        public ChangeNotifier(IMongoClient mongoClient)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
+            if (mongoClient == null)
+                throw new ArgumentNullException(nameof(mongoClient));
 
-            _collection = new Lazy<IMongoCollection<ChangeRecord>>(() => GetCollection(client));
+            _collection = new Lazy<IMongoCollection<ChangeRecord>>(() => GetCollection(mongoClient));
         }
 
 
@@ -64,7 +64,7 @@ namespace MongoDB.Messaging.Change
         /// <value>
         /// The change notification subscribers.
         /// </value>
-        public IEnumerable<ISubscription> Subscribers => _subscribers;
+        public IReadOnlyCollection<ISubscription> Subscribers => _subscribers;
 
 
         /// <summary>
@@ -154,6 +154,7 @@ namespace MongoDB.Messaging.Change
             lock (_subscribers)
                 subscribers = _subscribers.ToArray();
 
+            // notify all subscribers that are active and match filter
             var deadSubscribers = subscribers
                 .Where(h => IsMatch(changeRecord, h.Filter))
                 .Where(h => !h.BeginInvoke(changeRecord))
@@ -175,14 +176,15 @@ namespace MongoDB.Messaging.Change
 
             var options = new FindOptions<ChangeRecord> { CursorType = CursorType.TailableAwait };
 
-            var timestamp = LastNotification ?? new BsonTimestamp((int)DateTime.UtcNow.ToUnixTimeSeconds(), 0);
-            var filter = Builders<ChangeRecord>.Filter.Gte(m => m.Timestamp, timestamp);
 
             while (!token.IsCancellationRequested)
             {
                 Logger.Trace()
                     .Message("Starting tailable cursor on oplog.")
                     .Write();
+
+                var timestamp = GetTimestamp();
+                var filter = Builders<ChangeRecord>.Filter.Gte(m => m.Timestamp, timestamp);
 
                 // Start the cursor and wait for the initial response
                 using (var cursor = await collection.FindAsync(filter, options, token).ConfigureAwait(false))
@@ -195,9 +197,18 @@ namespace MongoDB.Messaging.Change
                 }
 
                 // cursor died, restart it
-                timestamp = LastNotification ?? new BsonTimestamp((int)DateTime.UtcNow.ToUnixTimeSeconds(), 0);
-                filter = Builders<ChangeRecord>.Filter.Gte(m => m.Timestamp, timestamp);
             }
+        }
+
+        private BsonTimestamp GetTimestamp()
+        {
+            if (LastNotification != null && LastNotification != default(BsonTimestamp))
+                return LastNotification;
+
+            int unixTime = Convert.ToInt32(DateTime.UtcNow.ToUnixTimeSeconds());
+            var timestamp = new BsonTimestamp(unixTime, 0);
+
+            return timestamp;
         }
 
         private bool IsMatch(ChangeRecord changeRecord, string filter)
@@ -216,9 +227,9 @@ namespace MongoDB.Messaging.Change
             return GetCollection(client);
         }
 
-        private IMongoCollection<ChangeRecord> GetCollection(MongoClient client)
+        private IMongoCollection<ChangeRecord> GetCollection(IMongoClient mongoClient)
         {
-            var database = client.GetDatabase("local");
+            var database = mongoClient.GetDatabase("local");
             var collection = database.GetCollection<ChangeRecord>("oplog.rs");
 
             return collection;

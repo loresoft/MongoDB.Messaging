@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MongoDB.Messaging.Change
 {
@@ -51,12 +50,13 @@ namespace MongoDB.Messaging.Change
         /// <returns><c>true</c> if the Handler is still alive and was able to be invoked; otherwise <c>false</c>.</returns>
         public bool BeginInvoke(ChangeRecord change)
         {
+            // handler might have been disposed
             var handler = _reference.Target as IHandleChange;
             if (handler == null)
                 return false;
 
             // fire and forget
-            return ThreadPool.QueueUserWorkItem(state => handler.HandleChange(change)); ;
+            return ThreadPool.QueueUserWorkItem(state => handler.HandleChange(change));
         }
     }
 }
