@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB.Messaging", "MongoDB.Messaging\MongoDB.Messaging.csproj", "{F0E701B8-3597-4D3D-AF4D-C57C75E01CCD}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sleep.Client", "..\Samples\Sleep.Client\Sleep.Client.csproj", "{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sleep.Service", "..\Samples\Sleep.Service\Sleep.Service.csproj", "{68549D2B-2E62-4DB9-B482-4054018AF387}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueBrowser", "..\Samples\QueueBrowser\QueueBrowser.csproj", "{76CA8ADD-8E7E-4406-9A26-62E6B1C2B312}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{68549D2B-2E62-4DB9-B482-4054018AF387}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68549D2B-2E62-4DB9-B482-4054018AF387}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68549D2B-2E62-4DB9-B482-4054018AF387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CA8ADD-8E7E-4406-9A26-62E6B1C2B312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CA8ADD-8E7E-4406-9A26-62E6B1C2B312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CA8ADD-8E7E-4406-9A26-62E6B1C2B312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CA8ADD-8E7E-4406-9A26-62E6B1C2B312}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,5 +55,6 @@ Global
 		{A8AB481D-4A51-4F40-B64D-0EC84BB40EF2} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
 		{27588BA8-7FAD-4D2B-9BC4-2F40D2772CC5} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
 		{68549D2B-2E62-4DB9-B482-4054018AF387} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
+		{76CA8ADD-8E7E-4406-9A26-62E6B1C2B312} = {E8C49EF1-DBB1-4264-BCDB-57DCA0E8D776}
 	EndGlobalSection
 EndGlobal

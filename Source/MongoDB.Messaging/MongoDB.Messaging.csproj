@@ -113,7 +113,7 @@
     <Compile Include="Service\MessageService.cs" />
     <Compile Include="MessageState.cs" />
     <Compile Include="Service\MessageWorker.cs" />
-    <Compile Include="Storage\MongoConnection.cs" />
+    <Compile Include="Storage\MongoFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\QueueConfiguration.cs" />
     <Compile Include="Configuration\QueueContainer.cs" />

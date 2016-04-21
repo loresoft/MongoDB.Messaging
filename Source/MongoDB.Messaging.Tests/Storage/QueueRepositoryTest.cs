@@ -224,7 +224,7 @@ namespace MongoDB.Messaging.Tests.Storage
 
         private static QueueRepository GetRepository()
         {
-            var database = MongoConnection.GetDatabase("Messaging");
+            var database = MongoFactory.GetDatabaseFromConnectionName("Messaging");
             var collection = database.GetCollection<Message>("test-queue");
             var repo = new QueueRepository(collection);
             return repo;

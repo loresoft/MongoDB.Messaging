@@ -222,7 +222,7 @@ namespace MongoDB.Messaging.Change
 
         private IMongoCollection<ChangeRecord> GetCollection(string connectionName)
         {
-            var mongoUrl = MongoConnection.GetMongoUrl(connectionName);
+            var mongoUrl = MongoFactory.GetMongoUrl(connectionName);
             var client = new MongoClient(mongoUrl);
             return GetCollection(client);
         }

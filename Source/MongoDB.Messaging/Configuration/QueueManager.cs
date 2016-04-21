@@ -193,8 +193,8 @@ namespace MongoDB.Messaging.Configuration
                     return;
 
                 _database = string.IsNullOrEmpty(ConnectionName)
-                    ? MongoConnection.GetConnection("mongodb://localhost/Messaging")
-                    : MongoConnection.GetDatabase(ConnectionName);
+                    ? MongoFactory.GetDatabaseFromConnectionString("mongodb://localhost/Messaging")
+                    : MongoFactory.GetDatabaseFromConnectionName(ConnectionName);
             }
         }
 

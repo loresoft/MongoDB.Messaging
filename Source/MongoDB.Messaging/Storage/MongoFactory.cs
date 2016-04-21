@@ -7,17 +7,17 @@ namespace MongoDB.Messaging.Storage
     /// <summary>
     /// A helper class for getting MongoDB database connection.
     /// </summary>
-    public static class MongoConnection
+    public static class MongoFactory
     {
         /// <summary>
         /// Gets the <see cref="IMongoDatabase"/> with the specified connection string.
         /// </summary>
         /// <param name="connectionString">The MongoDB connection string.</param>
         /// <returns>An instance of <see cref="IMongoDatabase"/>.</returns>
-        public static IMongoDatabase GetConnection(string connectionString)
+        public static IMongoDatabase GetDatabaseFromConnectionString(string connectionString)
         {
             var mongoUrl = new MongoUrl(connectionString);
-            return GetDatabase(mongoUrl);
+            return GetDatabaseFromMongoUrl(mongoUrl);
         }
 
         /// <summary>
@@ -27,10 +27,12 @@ namespace MongoDB.Messaging.Storage
         /// <returns>
         /// An instance of <see cref="IMongoDatabase" />.
         /// </returns>
-        public static IMongoDatabase GetDatabase(string connectionName)
+        /// <exception cref="ArgumentNullException"><paramref name="connectionName"/> is <see langword="null" />.</exception>
+        /// <exception cref="ConfigurationErrorsException">No connection string could be found in the application configuration file.</exception>
+        public static IMongoDatabase GetDatabaseFromConnectionName(string connectionName)
         {
             var mongoUrl = GetMongoUrl(connectionName);
-            return GetDatabase(mongoUrl);
+            return GetDatabaseFromMongoUrl(mongoUrl);
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace MongoDB.Messaging.Storage
         /// <returns>
         /// An instance of <see cref="IMongoDatabase" />.
         /// </returns>
-        public static IMongoDatabase GetDatabase(MongoUrl mongoUrl)
+        public static IMongoDatabase GetDatabaseFromMongoUrl(MongoUrl mongoUrl)
         {
             var client = new MongoClient(mongoUrl);
             var mongoDatabase = client.GetDatabase(mongoUrl.DatabaseName);
@@ -61,15 +63,13 @@ namespace MongoDB.Messaging.Storage
             if (connectionName == null)
                 throw new ArgumentNullException("connectionName");
 
-            var settings = System.Configuration.ConfigurationManager.ConnectionStrings[connectionName];
+            var settings = ConfigurationManager.ConnectionStrings[connectionName];
             if (settings == null)
-                throw new ConfigurationErrorsException(
-                    string.Format("No connection string named '{0}' could be found in the application configuration file.", connectionName));
+                throw new ConfigurationErrorsException($"No connection string named '{connectionName}' could be found in the application configuration file.");
 
             string connectionString = settings.ConnectionString;
             if (string.IsNullOrEmpty(connectionString))
-                throw new ConfigurationErrorsException(
-                    string.Format("The connection string '{0}' in the application's configuration file does not contain the required connectionString attribute.", connectionName));
+                throw new ConfigurationErrorsException($"The connection string '{connectionName}' in the application's configuration file does not contain the required connectionString attribute.");
 
             var mongoUrl = new MongoUrl(settings.ConnectionString);
             return mongoUrl;

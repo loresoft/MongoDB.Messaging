@@ -110,3 +110,4 @@ UpgradeLog*.XML
 /build.txt
 /Tools/MSBuildTasks
 *.GhostDoc.xml
+/Source/.vs/config

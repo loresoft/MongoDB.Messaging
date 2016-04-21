@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -18,6 +19,14 @@ namespace MongoDB.Messaging.Storage
         /// The underlying storage collection.
         /// </value>
         IMongoCollection<Message> Collection { get; }
+
+
+        /// <summary>
+        /// Start an <see cref="IQueryable"/> of all messages.
+        /// </summary>
+        /// <returns>An <see cref="IQueryable"/> of all messages.</returns>
+        IQueryable<Message> All();
+
 
         /// <summary>
         /// Finds message with the specified <paramref name="id"/> as an asynchronous operation.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -32,6 +33,18 @@ namespace MongoDB.Messaging.Storage
         public IMongoCollection<Message> Collection
         {
             get { return _collection; }
+        }
+
+
+        /// <summary>
+        /// Start an <see cref="IQueryable" /> of all messages.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IQueryable" /> of all messages.
+        /// </returns>
+        public IQueryable<Message> All()
+        {
+            return _collection.AsQueryable();
         }
 
 

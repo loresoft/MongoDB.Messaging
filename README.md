@@ -66,7 +66,7 @@ Publishing a message adds the message with the corresponding data to a queue for
 
 #### Subscribe
 
-In order to process a message on a queue, an application needs to subscribe to a queue.  There can be many subscribers to a queue to scale the load across processes. A subscriber and also set the worker count to scale the number of processing threads for that subscriber.
+In order to process a message on a queue, an application needs to subscribe to a queue.  There can be many subscribers to a queue to scale the load across processes. A subscriber can also set the worker count to scale the number of processing threads for that subscriber.
 
 The framework ensures that only one subscriber can process a messages.
 
@@ -82,8 +82,8 @@ MessageQueue.Default.Configure(c => c
     .Queue(s => s
         .Name(SleepMessage.QueueName)
         .Priority(MessagePriority.Normal)
-		.ResponseQueue("ReplyQueueName")
-		.Retry(5)            
+        .ResponseQueue("ReplyQueueName")
+        .Retry(5)
     )
 );
 ```
@@ -108,7 +108,7 @@ var message = await MessageQueue.Default.Publish(m => m
     .Correlation("321B4671-3B4C-4B97-8E81-D6A8CF22D4F0")
     .Description("User friendly description of the message")
     .Priority(MessagePriority.Normal)
-    .Retry(1)                
+    .Retry(1)
 );
 ```
 
@@ -135,7 +135,7 @@ var message = await MessageQueue.Default.Publish(m => m
 
 ## Subscribe to Message
 
-To subscribe a message to a queue, use the fluent api.
+To subscribe to a queue, use the fluent api. The subscribe handler must implement `IMessageSubscriber`.
 
 ```c#
 MessageQueue.Default.Configure(c => c
@@ -147,7 +147,7 @@ MessageQueue.Default.Configure(c => c
     )
 );
 ```
-To speed up processing, you can monitor the oplog for changes to trigger processing
+To speed up processing, you can monitor the oplog for changes to trigger processing.  The connection must have access to local.oplog.rs
 
 ```c#
 MessageQueue.Default.Configure(c => c
@@ -172,7 +172,7 @@ MessageQueue.Default.Configure(c => c
 **ExpireError** is how long to keep error messages.      
 **ExpireWarning** is how long to keep warning messages.   
 **ExpireSuccessful** is how long to keep successful messages.   
-**PollTime** is the amount of time between work polling.   
+**PollTime** is the amount of time between work polling. If using Triggger, set to longer time.
 **Retry** is a class that implements IMessageRetry.  IMessageRetry controls if an error message should be retried.   
 **Timeout** is the amount of time before a processing message times out.   
 **TimeoutAction** is how to handle timed out messages. Options are Fail or Retry.   
@@ -205,18 +205,20 @@ public class SleepHandler : IMessageSubscriber
         var sleepMessage = context.Data<SleepMessage>();
 
         // Do processing here
-		
+
         return MessageResult.Successful;
     }
 
     public void Dispose()
     {
-		// free resources
+        // free resources
     }
 }
 ```
 
 ## IMessageRetry Interface
+
+The `IMessageRetry` interface allows for customization of the retry of failed messages.
 
 The following is the default implementation of `IMessageRetry`
 
@@ -225,10 +227,10 @@ public class MessageRetry : IMessageRetry
 {
     public virtual bool ShouldRetry(ProcessContext processContext, Exception exception)
     {
-		// get current message 
+        // get current message 
         var message = processContext.Message;
 
-		// true to retry message
+        // true to retry message
         return message.ErrorCount < message.RetryCount;
     }
 
@@ -249,5 +251,40 @@ public class MessageRetry : IMessageRetry
         // default
         return DateTime.Now.AddMinutes(1);
     }
+}
+```
+
+## Process Locks
+
+The library has supports distributed locks.  The following are the lock types supported.
+
+**DistributedLock** Distributed Lock manager provides synchronized access to a resources over a network    
+**ThrottleLock** Throttle Lock Manager controls how frequent a process can run    
+
+This is an example of using the DistributedLock.
+
+```c#
+var lockName = "PrintMessage";
+
+// get MongoDB collection to store lock
+var collection = GetCollection();
+
+// create lock with timeout, max time it will wait for lock, of 5 minutes
+var locker = new DistributedLock(collection, TimeSpan.FromMinutes(5));
+
+// acquire lock; if can't, it will retry to get lock up to timeout value
+var result = locker.Acquire(lockName);
+if (!result)
+    return; // acquire lock timeout
+
+try
+{
+    // do processing here
+
+}
+finally
+{
+    // release lock
+    locker.Release(lockName);
 }
 ```
