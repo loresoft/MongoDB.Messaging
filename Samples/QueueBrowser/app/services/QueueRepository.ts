@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_ref.ts" />
 
-module Enterprise {
+module Messaging {
   "use strict";
 
   export class QueueRepository {
@@ -9,38 +9,38 @@ module Enterprise {
     ];
 
     urlBase: string = 'api/Queue';
-    $http: ng.IHttpService;
+    $http: angular.IHttpService;
 
     constructor(
-      $http: ng.IHttpService) {
+      $http: angular.IHttpService) {
       this.$http = $http;
     }
 
-    list(): ng.IHttpPromise<INameValueModel[]> {
+    list(): angular.IHttpPromise<INameValueModel[]> {
       var url = this.urlBase;
       return this.$http.get<INameValueModel[]>(url);
 
     }
 
-    status(queue: string): ng.IHttpPromise<IQueueStatusModel> {
+    status(queue: string): angular.IHttpPromise<IQueueStatusModel> {
       var url = this.urlBase + '/' + encodeURIComponent(queue) + '/Status';
       return this.$http.get<IQueueStatusModel>(url);
     }
 
-    messages(queue: string, request: IQueryRequest): ng.IHttpPromise<IQueryyResult<IQueueMessageModel>> {
+    messages(queue: string, request: IQueryRequest): angular.IHttpPromise<IQueryyResult<IQueueMessageModel>> {
       var url = this.urlBase + '/' + encodeURIComponent(queue) + '/Messages';
       var config = <IQueryRequest>{ params: request };
       return this.$http.get<IQueryyResult<IQueueMessageModel>>(url, config);
     }
 
-    requeue(queue: string, action: IQueueActionModel): ng.IHttpPromise<void> {
+    requeue(queue: string, action: IQueueActionModel): angular.IHttpPromise<void> {
       var url = this.urlBase + '/' + encodeURIComponent(queue) + '/Requeue';
       return this.$http.post<void>(url, action);
     }
 
-    delete(queue: string, action: IQueueActionModel): ng.IHttpPromise<void> {
+    delete(queue: string, action: IQueueActionModel): angular.IHttpPromise<void> {
       var url = this.urlBase + '/' + encodeURIComponent(queue) + '/Messages';
-      var config = <ng.IRequestShortcutConfig>{
+      var config = <angular.IRequestShortcutConfig>{
         headers: {
           'Content-Type': 'application/json'
         },
@@ -54,7 +54,7 @@ module Enterprise {
   }
 
   // register service
-  angular.module(Enterprise.applicationName).service('queueRepository', [
+  angular.module(Messaging.applicationName).service('queueRepository', [
     '$http',
     QueueRepository
   ]);

@@ -1,10 +1,13 @@
 ﻿using System;
+using MongoDB.Driver;
 
 namespace QueueBrowser.Models
 {
     public class QueueStatusModel
     {
         public string Name { get; set; }
+
+        public string Namespace { get; set; }
 
         public long Queued { get; set; }
         public long Processing { get; set; }

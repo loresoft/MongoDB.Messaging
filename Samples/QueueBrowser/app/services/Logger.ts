@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_ref.ts" />
 
-module Enterprise {
+module Messaging {
   "use strict";
 
 
@@ -14,14 +14,14 @@ module Enterprise {
       var self = this;
 
       self.toastr = toastr;
-      self.logError = <ng.IHttpPromiseCallback<any>>angular.bind(self, self.handelError);
+      self.logError = <angular.IHttpPromiseCallback<any>>angular.bind(self, self.handelError);
 
     }
 
     toastr: angular.toastr.IToastrService;
-    logError: ng.IHttpPromiseCallback<any>;
+    logError: angular.IHttpPromiseCallback<any>;
 
-    handelError(data: any, status: number, headers: ng.IHttpHeadersGetter, config: ng.IRequestConfig) {
+    handelError(data: any, status: number, headers: angular.IHttpHeadersGetter, config: angular.IRequestConfig) {
       var self = this;
       var message = '';
 
@@ -93,7 +93,7 @@ module Enterprise {
   }
 
   // register service
-  angular.module(Enterprise.applicationName)
+  angular.module(Messaging.applicationName)
     .service('logger', [
       'toastr',
       Logger

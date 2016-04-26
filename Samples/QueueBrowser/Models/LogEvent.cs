@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace QueueBrowser.Data
+namespace QueueBrowser.Models
 {
     [BsonIgnoreExtraElements(true, Inherited = true)]
     public class LogEvent

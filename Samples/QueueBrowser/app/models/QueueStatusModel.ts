@@ -1,9 +1,10 @@
 ﻿/// <reference path="../_ref.ts" />
-module Enterprise {
+module Messaging {
     "use strict";
 
     export interface IQueueStatusModel {
         Name?: string;
+        Namespace?: string;
         Queued?: number;
         Processing?: number;
         Complete?: number;

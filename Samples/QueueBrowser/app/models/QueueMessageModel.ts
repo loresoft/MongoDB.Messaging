@@ -1,5 +1,5 @@
 ﻿/// <reference path="../_ref.ts" />
-module Enterprise {
+module Messaging {
     "use strict";
 
     export interface IQueueMessageModel {

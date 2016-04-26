@@ -41,11 +41,14 @@ namespace QueueBrowser
                     "~/Scripts/angular-sanitize.js",
                     /* bootstrap */
                     "~/Scripts/bootstrap.js",
-                    
+
                     /* other */
+                    "~/Scripts/lodash.js",
+                    "~/Scripts/jquery.signalR-{version}.js",
+                    "~/Scripts/angular-signalr-hub.js",
                     "~/Scripts/moment.js",
-                    "~/Scripts/bootstrap-dialog.js",
                     "~/Scripts/angular-moment.js",
+                    "~/Scripts/bootstrap-dialog.js",
                     "~/Scripts/angular-toastr.tpls.js",
                     "~/Scripts/angular-ui/ui-bootstrap-tpls.js"
                 )

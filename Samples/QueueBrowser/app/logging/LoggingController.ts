@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_ref.ts" />
 
-module Enterprise {
+module Messaging {
   "use strict";
 
   export class LoggingController {
@@ -17,8 +17,8 @@ module Enterprise {
 
     constructor(
       $scope,
-      $window: ng.IWindowService,
-      $location: ng.ILocationService,
+      $window: angular.IWindowService,
+      $location: angular.ILocationService,
       loggingRepository: LoggingRepository,
       toastr: angular.toastr.IToastrService,
       logger: Logger) {
@@ -38,8 +38,8 @@ module Enterprise {
     }
 
     $scope: any;
-    $window: ng.IWindowService;
-    $location: ng.ILocationService;
+    $window: angular.IWindowService;
+    $location: angular.ILocationService;
     loggingRepository: LoggingRepository;
     toastr: angular.toastr.IToastrService;
     logger: Logger;
@@ -148,7 +148,7 @@ module Enterprise {
   }
 
   // register controller
-  angular.module(Enterprise.applicationName).controller('loggingController', [
+  angular.module(Messaging.applicationName).controller('loggingController', [
     '$scope',
     '$window',
     '$location',

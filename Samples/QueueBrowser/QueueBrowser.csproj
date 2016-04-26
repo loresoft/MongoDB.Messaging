@@ -50,11 +50,35 @@
       <HintPath>..\..\Source\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\Source\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Cors, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.Owin.Cors.3.0.1\lib\net45\Microsoft.Owin.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\Source\packages\MongoDB.Bson.2.2.3\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
@@ -87,11 +111,19 @@
       <HintPath>..\..\Source\packages\NLog.Web.4.2\lib\net35\NLog.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Linq.Dynamic, Version=1.0.5840.25917, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\Source\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Source\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Entity" />
@@ -166,12 +198,17 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoggingController.cs" />
     <Compile Include="Controllers\QueueController.cs" />
-    <Compile Include="Data\LogError.cs" />
-    <Compile Include="Data\LogEvent.cs" />
-    <Compile Include="Data\LoggingRepository.cs" />
+    <Compile Include="Models\LogError.cs" />
+    <Compile Include="Models\LogEvent.cs" />
+    <Compile Include="Notifications\ChangeNotification.cs" />
+    <Compile Include="Notifications\ChangeNotificationHubHandler.cs" />
+    <Compile Include="Notifications\ChangeNotificationService.cs" />
+    <Compile Include="Notifications\INotifyChange.cs" />
+    <Compile Include="Repositories\LoggingRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Notifications\ChangeNotificationHub.cs" />
     <Compile Include="Models\AlertModel.cs" />
     <Compile Include="Models\AlertTypes.cs" />
     <Compile Include="Models\NameValueModel.cs" />
@@ -184,9 +221,10 @@
     <Compile Include="Query\QueryOptionsBuilder.cs" />
     <Compile Include="Query\QueryRequest.cs" />
     <Compile Include="Query\QueryResult.cs" />
-    <Compile Include="Data\QueueRepository.cs" />
+    <Compile Include="Repositories\QueueRepository.cs" />
     <Compile Include="Services\LoggingController.cs" />
     <Compile Include="Services\QueueController.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\.gitignore" />
@@ -212,6 +250,7 @@
     <Content Include="Scripts\angular-moment.js" />
     <Content Include="Scripts\angular-route.js" />
     <Content Include="Scripts\angular-sanitize.js" />
+    <Content Include="Scripts\angular-signalr-hub.js" />
     <Content Include="Scripts\angular-toastr.js" />
     <Content Include="Scripts\angular-toastr.tpls.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
@@ -220,6 +259,8 @@
     <Content Include="Scripts\bootstrap-dialog.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\jquery-2.2.3.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.js" />
+    <Content Include="Scripts\lodash.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Web.config" />
@@ -238,6 +279,7 @@
     <TypeScriptCompile Include="app\app.ts" />
     <TypeScriptCompile Include="app\logging\LoggingController.ts" />
     <TypeScriptCompile Include="app\models\AlertOptions.ts" />
+    <TypeScriptCompile Include="app\models\ChangeNotification.ts" />
     <TypeScriptCompile Include="app\models\LogError.ts" />
     <TypeScriptCompile Include="app\models\LogEvent.ts" />
     <TypeScriptCompile Include="app\models\NameValueModel.ts" />
@@ -247,6 +289,7 @@
     <TypeScriptCompile Include="app\models\QueueMessageModel.ts" />
     <TypeScriptCompile Include="app\models\QueueStatusModel.ts" />
     <TypeScriptCompile Include="app\queue\QueueBrowserController.ts" />
+    <TypeScriptCompile Include="app\services\NotificationService.ts" />
     <TypeScriptCompile Include="app\services\Logger.ts" />
     <TypeScriptCompile Include="app\services\LoggingRepository.ts" />
     <TypeScriptCompile Include="app\services\QueueRepository.ts" />
@@ -264,8 +307,10 @@
     <TypeScriptCompile Include="Scripts\typings\bootstrap-dialog\bootstrap-dialog.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\bootstrap\bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\lodash\lodash.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\moment\moment-node.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\moment\moment.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\signalr\signalr.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

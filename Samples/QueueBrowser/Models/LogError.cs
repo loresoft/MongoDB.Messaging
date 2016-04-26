@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Configuration;
-using System.Linq;
-using System.Linq.Expressions;
-using Microsoft.Ajax.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using MongoDB.Messaging.Storage;
 
-namespace QueueBrowser.Data
+namespace QueueBrowser.Models
 {
     [BsonIgnoreExtraElements(true, Inherited = true)]
     public class LogError

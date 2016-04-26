@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Configuration;
 using MongoDB.Driver;
-using MongoDB.Messaging;
 using MongoDB.Messaging.Storage;
 using QueueBrowser.Models;
 using QueueBrowser.Query;
 
-namespace QueueBrowser.Data
+namespace QueueBrowser.Repositories
 {
     public class LoggingRepository 
     {

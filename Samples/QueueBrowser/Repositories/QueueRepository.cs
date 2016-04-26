@@ -10,16 +10,11 @@ using NLog.Fluent;
 using QueueBrowser.Models;
 using QueueBrowser.Query;
 
-namespace QueueBrowser.Data
+namespace QueueBrowser.Repositories
 {
     public class QueueRepository
     {
         private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-
-        public QueueRepository()
-        {
-            MessageQueue.Default.Configure(c => c.Connection("MongoMessaging"));
-        }
 
         public IEnumerable<NameValueModel> GetQueues(string filter = null)
         {
@@ -58,16 +53,17 @@ namespace QueueBrowser.Data
             var status = new QueueStatusModel();
 
             var queueContainer = MessageQueue.Default.QueueManager.Load(queueName);
+            var repository = queueContainer.Repository;
 
-            var queuedTask = queueContainer.Repository.Count(m => m.State == MessageState.Queued);
-            var processingTask = queueContainer.Repository.Count(m => m.State == MessageState.Processing);
-            var completeTask = queueContainer.Repository.Count(m => m.State == MessageState.Complete);
-            var timeoutTask = queueContainer.Repository.Count(m => m.State == MessageState.Timeout);
-            var scheduledTask = queueContainer.Repository.Count(m => m.State == MessageState.Scheduled);
+            var queuedTask = repository.Count(m => m.State == MessageState.Queued);
+            var processingTask = repository.Count(m => m.State == MessageState.Processing);
+            var completeTask = repository.Count(m => m.State == MessageState.Complete);
+            var timeoutTask = repository.Count(m => m.State == MessageState.Timeout);
+            var scheduledTask = repository.Count(m => m.State == MessageState.Scheduled);
 
-            var successfulTask = queueContainer.Repository.Count(m => m.Result == MessageResult.Successful);
-            var warningTask = queueContainer.Repository.Count(m => m.Result == MessageResult.Warning);
-            var errorTask = queueContainer.Repository.Count(m => m.Result == MessageResult.Error);
+            var successfulTask = repository.Count(m => m.Result == MessageResult.Successful);
+            var warningTask = repository.Count(m => m.Result == MessageResult.Warning);
+            var errorTask = repository.Count(m => m.Result == MessageResult.Error);
 
             Task.WaitAll(
                 queuedTask,
@@ -81,6 +77,7 @@ namespace QueueBrowser.Data
             );
 
             status.Name = queueContainer.Name;
+            status.Namespace = repository.Collection.CollectionNamespace.FullName;
 
             status.Queued = queuedTask.Result;
             status.Processing = processingTask.Result;

@@ -8,9 +8,9 @@ using System.Web.Http.ModelBinding;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using MongoDB.Messaging;
-using QueueBrowser.Data;
 using QueueBrowser.Models;
 using QueueBrowser.Query;
+using QueueBrowser.Repositories;
 
 namespace QueueBrowser.Services
 {

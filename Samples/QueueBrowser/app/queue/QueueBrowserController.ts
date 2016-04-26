@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_ref.ts" />
 
-module Enterprise {
+module Messaging {
   "use strict";
 
   export class QueueBrowserController {
@@ -17,8 +17,8 @@ module Enterprise {
 
     constructor(
       $scope,
-      $window: ng.IWindowService,
-      $location: ng.ILocationService,
+      $window: angular.IWindowService,
+      $location: angular.ILocationService,
       queueRepository: QueueRepository,
       toastr: angular.toastr.IToastrService,
       logger: Logger) {
@@ -36,20 +36,18 @@ module Enterprise {
 
       self.loadDropdown();
 
-      // reload every 20 sec
-      var p = $.proxy(self.loadStatus, self);
-      self.refreshTimer = setInterval(p, 20000);
+      self.$scope.$on('changeNotification', self.onchange.bind(self));
+      self.refresh = _.throttle(self.reload.bind(self), 300, { leading: false, trailing: true });
     }
 
     $scope: any;
-    $window: ng.IWindowService;
-    $location: ng.ILocationService;
+    $window: angular.IWindowService;
+    $location: angular.ILocationService;
     queueRepository: QueueRepository;
     toastr: angular.toastr.IToastrService;
     logger: Logger;
 
-    refreshTimer: number;
-    loadCount: number = 0;
+    refresh: Function;
 
     queue: INameValueModel;
     queues: INameValueModel[] = [];
@@ -111,16 +109,11 @@ module Enterprise {
       if (!self.queue)
         return;
 
-      self.loadCount++;
       self.queueRepository.status(self.queue.Name)
         .success((data, status, headers, config) => {
           self.status = data;
         })
         .error(self.logger.logError);
-
-      // only run refresh 50x
-      if (self.loadCount > 50)
-        clearInterval(self.refreshTimer);
     }
 
     reload() {
@@ -259,10 +252,20 @@ module Enterprise {
       return filter;
     }
 
+    onchange(e: angular.IAngularEvent, notification: IChangeNotification) {
+      var self = this;
+      if (!notification)
+        return;
+
+      if (notification.Namespace !== self.status.Namespace)
+        return;
+
+      self.refresh();
+    }
   }
 
   // register controller
-  angular.module(Enterprise.applicationName).controller('queueBrowserController', [
+  angular.module(Messaging.applicationName).controller('queueBrowserController', [
     '$scope',
     '$window',
     '$location',

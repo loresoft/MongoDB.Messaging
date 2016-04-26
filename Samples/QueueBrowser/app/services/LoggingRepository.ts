@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_ref.ts" />
 
-module Enterprise {
+module Messaging {
   "use strict";
 
   export class LoggingRepository {
@@ -9,14 +9,14 @@ module Enterprise {
     ];
 
     urlBase: string = 'api/Logging';
-    $http: ng.IHttpService;
+    $http: angular.IHttpService;
 
     constructor(
-      $http: ng.IHttpService) {
+      $http: angular.IHttpService) {
       this.$http = $http;
     }
 
-    get(request: IQueryRequest): ng.IHttpPromise<IQueryyResult<IQueueMessageModel>> {
+    get(request: IQueryRequest): angular.IHttpPromise<IQueryyResult<IQueueMessageModel>> {
       var url = this.urlBase + '/';
       var config = <IQueryRequest>{ params: request };
       return this.$http.get<IQueryyResult<IQueueMessageModel>>(url, config);
@@ -25,7 +25,7 @@ module Enterprise {
   }
 
   // register service
-  angular.module(Enterprise.applicationName).service('loggingRepository', [
+  angular.module(Messaging.applicationName).service('loggingRepository', [
     '$http',
     LoggingRepository
   ]);
