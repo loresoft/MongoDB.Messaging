@@ -17,6 +17,8 @@ namespace MongoDB.Messaging.Change
     /// </summary>
     public class ChangeNotifier
     {
+        private static readonly ILogger _logger = Logger.CreateLogger<ChangeNotifier>();  
+
         private readonly List<ISubscription> _subscribers = new List<ISubscription>();
         private readonly Lazy<IMongoCollection<ChangeRecord>> _collection;
 
@@ -77,14 +79,15 @@ namespace MongoDB.Messaging.Change
             if (Interlocked.CompareExchange(ref _tokenSource, tokenSource, null) != null)
                 return; // if wasn't null, already running
 
-            Logger.Trace()
+            _logger.Trace()
                 .Message("Start change notifier.")
                 .Write();
 
             var token = _tokenSource.Token;
 
             // start async
-            Task.Run(() => StartCursorAsync(token), token);
+            Task.Factory.StartNew(() => StartCursorAsync(token), token, TaskCreationOptions.LongRunning, TaskScheduler.Default)
+                .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
         }
 
         /// <summary>
@@ -92,7 +95,7 @@ namespace MongoDB.Messaging.Change
         /// </summary>
         public void Stop()
         {
-            Logger.Trace()
+            _logger.Trace()
                 .Message("Stop change notifier.")
                 .Write();
 
@@ -179,7 +182,7 @@ namespace MongoDB.Messaging.Change
 
             while (!token.IsCancellationRequested)
             {
-                Logger.Trace()
+                _logger.Trace()
                     .Message("Starting tailable cursor on oplog.")
                     .Write();
 
@@ -199,6 +202,7 @@ namespace MongoDB.Messaging.Change
                 // cursor died, restart it
             }
         }
+
 
         private BsonTimestamp GetTimestamp()
         {
@@ -230,9 +234,38 @@ namespace MongoDB.Messaging.Change
         private IMongoCollection<ChangeRecord> GetCollection(IMongoClient mongoClient)
         {
             var database = mongoClient.GetDatabase("local");
-            var collection = database.GetCollection<ChangeRecord>("oplog.rs");
+            VerifyCollection(database);
 
+            var collection = database.GetCollection<ChangeRecord>("oplog.rs");
             return collection;
         }
+
+
+        private static void VerifyCollection(IMongoDatabase database)
+        {
+            var filter = new BsonDocument("name", "oplog.rs");
+            var collections = database.ListCollections(new ListCollectionsOptions {Filter = filter});
+            bool exists = collections.ToList().Any();
+            if (exists)
+                return;
+
+            _logger.Error()
+                .Message("Could not find MongoDB 'oplog.rs' collection in 'local' database.")
+                .Write();
+
+            throw new InvalidOperationException("Could not find MongoDB 'oplog.rs' collection in 'local' database.");
+        }
+
+        private static void LogTaskError(Task task)
+        {
+            var exception = task.Exception;
+            var errorMessage = exception?.Message ?? string.Empty;
+
+            _logger.Error()
+                .Message("Error: " + errorMessage)
+                .Exception(exception)
+                .Write();
+        }
+
     }
 }

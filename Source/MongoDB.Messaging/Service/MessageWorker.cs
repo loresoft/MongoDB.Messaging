@@ -11,6 +11,8 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class MessageWorker : MessageWorkerBase
     {
+        private static readonly ILogger _logger = Logger.CreateLogger<MessageWorker>();
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageWorker"/> class.
         /// </summary>
@@ -58,7 +60,7 @@ namespace MongoDB.Messaging.Service
                 Logger.ThreadProperties.Set("Message", id);
                 statusMessage = string.Format("Processing message '{0}' ...", message.Name);
 
-                Logger.Debug()
+                _logger.Debug()
                     .Message(statusMessage)
                     .Write();
 
@@ -73,7 +75,7 @@ namespace MongoDB.Messaging.Service
                 expireDate = GetExpire(result);
                 var logLevel = GetLevel(result);
 
-                Logger.Log(logLevel)
+                _logger.Log(logLevel)
                     .Message(statusMessage)
                     .Write();
 
@@ -85,7 +87,7 @@ namespace MongoDB.Messaging.Service
                 statusMessage = "Error processing request: " + ex.GetBaseException().Message;
                 expireDate = GetExpire(MessageResult.Error);
 
-                Logger.Error()
+                _logger.Error()
                     .Message(statusMessage)
                     .Exception(ex)
                     .Write();
@@ -122,7 +124,7 @@ namespace MongoDB.Messaging.Service
 
             var nextAttempt = retry.NextAttempt(context);
 
-            Logger.Debug()
+            _logger.Debug()
                 .Message("Message {0} scheduled for retry on {1}.", message.Id, nextAttempt)
                 .Write();
 
@@ -188,7 +190,7 @@ namespace MongoDB.Messaging.Service
             if (ex == null)
                 return;
 
-            Logger.Error()
+            _logger.Error()
                 .Message("Task Error: " + ex.GetBaseException().Message)
                 .Exception(ex)
                 .Write();

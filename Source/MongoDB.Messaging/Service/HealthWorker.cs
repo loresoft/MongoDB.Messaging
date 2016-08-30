@@ -12,6 +12,7 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class HealthWorker : MessageWorkerBase
     {
+        private static readonly ILogger _logger = Logger.CreateLogger<HealthWorker>();
         private readonly ILockManager _lockManager;
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace MongoDB.Messaging.Service
             watch.Stop();
 
             // log as Warn if there are results
-            Logger.Warn()
+            _logger.Warn()
                 .Message("Completed '{0}' timeout check in: {1} ms. Timeout Message Count: {2}", Name, watch.ElapsedMilliseconds, result.ModifiedCount)
                 .WriteIf(result.ModifiedCount > 0);
         }
@@ -123,7 +124,7 @@ namespace MongoDB.Messaging.Service
             watch.Stop();
 
             // log as Info if there are results
-            Logger.Info()
+            _logger.Info()
                 .Message("Completed '{0}' schedule check in: {1} ms. Schedule Message Count: {2}", Name, watch.ElapsedMilliseconds, result.ModifiedCount)
                 .WriteIf(result.ModifiedCount > 0);
 

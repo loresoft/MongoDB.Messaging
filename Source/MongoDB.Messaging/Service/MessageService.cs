@@ -13,6 +13,8 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class MessageService : IMessageService
     {
+        private static readonly ILogger _logger = Logger.CreateLogger<MessageService>();
+
         private readonly Lazy<IList<IMessageProcessor>> _processors;
         private readonly Lazy<ChangeNotifier> _notifier;
         private readonly IQueueManager _manager;
@@ -105,7 +107,7 @@ namespace MongoDB.Messaging.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error()
+                    _logger.Error()
                         .Message("Error trying to start processor '{0}'.", process.Name)
                         .Exception(ex)
                         .Write();

@@ -13,7 +13,8 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public abstract class MessageWorkerBase : IMessageWorker
     {
-        
+        private static readonly ILogger _logger = Logger.CreateLogger<MessageWorkerBase>();
+
         private readonly IMessageProcessor _processor;
         private readonly IQueueContainer _container;
         private readonly IQueueConfiguration _configuration;
@@ -148,7 +149,7 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         public void Start()
         {
-            Logger.Trace()
+            _logger.Trace()
                 .Message("Starting '{0}' worker polling at {1}.", Name, _configuration.PollTime)
                 .Write();
 
@@ -161,7 +162,7 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         public void Stop()
         {
-            Logger.Trace()
+            _logger.Trace()
                 .Message("Stopping '{0}' worker.", Name)
                 .Write();
 
@@ -234,7 +235,7 @@ namespace MongoDB.Messaging.Service
                 Logger.ThreadProperties.Set("Worker", Name);
                 BeginWork();
 
-                Logger.Trace()
+                _logger.Trace()
                     .Message("Running '{0}' worker.", Name)
                     .Write();
 
@@ -244,14 +245,14 @@ namespace MongoDB.Messaging.Service
 
                 watch.Stop();
 
-                Logger.Trace()
+                _logger.Trace()
                     .Message("Completed '{0}' process in: {1} ms.", Name, watch.ElapsedMilliseconds)
                     .Write();
 
             }
             catch (Exception ex)
             {
-                Logger.Error()
+                _logger.Error()
                     .Message("Error running '{0}' process. {1}", Name, ex.Message)
                     .Exception(ex)
                     .Write();

@@ -14,13 +14,15 @@ namespace MongoDB.Messaging.Service
     /// </summary>
     public class MessageProcessor : IMessageProcessor, IHandleChange
     {
+        private static readonly ILogger _logger = Logger.CreateLogger<MessageProcessor>();
+
         private readonly Lazy<IList<IMessageWorker>> _workers;
         private readonly IMessageService _service;
         private readonly IQueueContainer _container;
         private readonly IQueueConfiguration _configuration;
 
         private int _activeWorkers;
-        private int _workerIndex = 0;
+        private int _triggerAttempts = 0;
 
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace MongoDB.Messaging.Service
             // Start workers
             foreach (var worker in _workers.Value)
             {
-                Logger.Trace()
+                _logger.Trace()
                     .Message("Starting worker '{0}'.", worker.Name)
                     .Write();
 
@@ -148,7 +150,7 @@ namespace MongoDB.Messaging.Service
             // Stop Workers
             foreach (var worker in _workers.Value)
             {
-                Logger.Trace()
+                _logger.Trace()
                     .Message("Stopping worker '{0}'.", worker.Name)
                     .Write();
 
@@ -197,15 +199,15 @@ namespace MongoDB.Messaging.Service
             var worker = NextWorker();
             if (worker == null)
             {
-                Logger.Trace()
-                    .Message("Trigger worker: All workers busy")
+                _logger.Trace()
+                    .Message("Change notification trigger: All workers busy")
                     .Write();
 
                 return;
             }
 
-            Logger.Trace()
-                .Message("Trigger worker: {0}", worker.Name)
+            _logger.Trace()
+                .Message("Change notification trigger: {0}", worker.Name)
                 .Write();
 
             worker.Trigger();
@@ -219,15 +221,14 @@ namespace MongoDB.Messaging.Service
 
             var workers = _workers.Value;
 
-            // round robin through workers
             int attempt = 0;
-            while (attempt < workers.Count)
-            {
-                if (_workerIndex >= workers.Count)
-                    Interlocked.Exchange(ref _workerIndex, 0);
+            int workerCount = workers.Count;
 
-                int index = _workerIndex;
-                Interlocked.Increment(ref _workerIndex);
+            while (attempt < workerCount)
+            {
+                // round robin through workers
+                int nextNumber = Interlocked.Increment(ref _triggerAttempts);
+                int index = nextNumber % workerCount;
 
                 var worker = workers[index];
                 if (!worker.IsBusy && worker is MessageWorker)
@@ -251,15 +252,15 @@ namespace MongoDB.Messaging.Service
 
             for (int i = 0; i < count; i++)
             {
-                string name = string.Format("{0}-Worker-{1:00}", _configuration.Name, i + 1);
+                string name = $"{_configuration.Name}-Worker-{i + 1:00}";
                 var worker = new MessageWorker(this, name);
 
-                Logger.Trace().Message("Created worker '{0}'.", worker.Name).Write();
+                _logger.Trace().Message("Created worker '{0}'.", worker.Name).Write();
                 workers.Add(worker);
             }
 
             // add health work 
-            string healthName = string.Format("{0}-Worker-Health", _configuration.Name);
+            string healthName = $"{_configuration.Name}-Worker-Health";
             var healthWorker = new HealthWorker(this, healthName);
             workers.Add(healthWorker);
 

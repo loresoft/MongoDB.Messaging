@@ -14,6 +14,7 @@ namespace MongoDB.Messaging.Configuration
     /// </summary>
     public class QueueManager : IQueueManager
     {
+        private static readonly ILogger _logger = Logger.CreateLogger<QueueManager>();
         private readonly ConcurrentDictionary<string, IQueueContainer> _queues;
 
         private readonly object _databaseLock;
@@ -330,11 +331,9 @@ namespace MongoDB.Messaging.Configuration
         private void LogTaskError(Task task)
         {
             var exception = task.Exception;
-            var errorMessage = exception != null
-                ? exception.Message
-                : string.Empty;
+            var errorMessage = exception?.Message ?? string.Empty;
 
-            Logger.Error()
+            _logger.Error()
                 .Message("Error: " + errorMessage)
                 .Exception(exception)
                 .Write();
