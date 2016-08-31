@@ -21,7 +21,7 @@
     <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
 
     <Major Condition=" '$(Major)' == '' ">1</Major>
-    <Minor Condition=" '$(Minor)' == '' ">5</Minor>
+    <Minor Condition=" '$(Minor)' == '' ">6</Minor>
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
 
     <AssemblyVersion>$(Major).$(Minor).0.0</AssemblyVersion>
@@ -71,7 +71,16 @@
   </Target>
 
 
+  <Target Name="UpdateVersion" DependsOnTargets="Version">
+    <ItemGroup>
+      <NuGetFiles Include="$(SourceFolder)\**\*.nuspec"/>
+    </ItemGroup>
 
+    <XmlUpdate XmlFileName="%(NuGetFiles.Identity)"
+               Prefix="d" Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+               XPath="/d:package/d:metadata/d:dependencies/d:dependency[@id='MongoDB.Messaging']/@version"
+               Value="$(PackageVersion)" />
+  </Target>
 
   <Target Name="Package" DependsOnTargets="Test">
     <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />

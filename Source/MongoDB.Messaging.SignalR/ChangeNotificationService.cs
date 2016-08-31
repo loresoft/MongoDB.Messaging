@@ -87,7 +87,7 @@ namespace MongoDB.Messaging.SignalR
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ChangeNotifier"/> from the specified <see cref="connectionName"/>.
+        /// Creates an instance of <see cref="ChangeNotifier"/> from the specified <paramref name="connectionName"/>.
         /// </summary>
         /// <returns></returns>
         protected virtual ChangeNotifier CreateNotifier(string connectionName)

@@ -17,17 +17,23 @@
     var containerDefer = $q.defer();
 
     var toast = {
+      active: active,
       clear: clear,
       error: error,
       info: info,
       remove: remove,
       success: success,
-      warning: warning
+      warning: warning,
+      refreshTimer: refreshTimer
     };
 
     return toast;
 
     /* Public API */
+    function active() {
+      return toasts.length;
+    }
+
     function clear(toast) {
       // Bit of a hack, I will remove this soon with a BC
       if (arguments.length === 1 && !toast) { return; }
@@ -61,6 +67,12 @@
       return _buildNotification(type, message, title, optionsOverride);
     }
 
+    function refreshTimer(toast, newTime) {
+      if (toast && toast.isOpened && toasts.indexOf(toast) >= 0) {
+          toast.scope.refreshTimer(newTime);
+      }
+    }
+
     function remove(toastId, wasClicked) {
       var toast = findToast(toastId);
 
@@ -69,7 +81,7 @@
         toast.isOpened = false;
         $animate.leave(toast.el).then(function() {
           if (toast.scope.options.onHidden) {
-            toast.scope.options.onHidden(wasClicked);
+            toast.scope.options.onHidden(!!wasClicked, toast);
           }
           toast.scope.$destroy();
           var index = toasts.indexOf(toast);
@@ -101,8 +113,7 @@
     }
 
     /* Internal functions */
-    function _buildNotification(type, message, title, optionsOverride)
-    {
+    function _buildNotification(type, message, title, optionsOverride) {
       if (angular.isObject(title)) {
         optionsOverride = title;
         title = null;
@@ -201,8 +212,8 @@
           extendedTimeOut: options.extendedTimeOut,
           messageClass: options.messageClass,
           onHidden: options.onHidden,
-          onShown: options.onShown,
-          onTap: options.onTap,
+          onShown: generateEvent('onShown'),
+          onTap: generateEvent('onTap'),
           progressBar: options.progressBar,
           tapToDismiss: options.tapToDismiss,
           timeOut: options.timeOut,
@@ -212,6 +223,14 @@
 
         if (options.closeButton) {
           toast.scope.options.closeHtml = options.closeHtml;
+        }
+
+        function generateEvent(event) {
+          if (options[event]) {
+            return function() {
+              options[event](toast);
+            };
+          }
         }
       }
 
@@ -321,7 +340,6 @@
 
   function progressBar(toastrConfig) {
     return {
-      replace: true,
       require: '^toast',
       templateUrl: function() {
         return toastrConfig.templates.progressbar;
@@ -396,7 +414,6 @@
 
   function toast($injector, $interval, toastrConfig, toastr) {
     return {
-      replace: true,
       templateUrl: function() {
         return toastrConfig.templates.toast;
       },
@@ -418,7 +435,7 @@
         button.addClass('toast-close-button');
         button.attr('ng-click', 'close(true, $event)');
         $compile(button)(scope);
-        element.prepend(button);
+        element.children().prepend(button);
       }
 
       scope.init = function() {
@@ -451,6 +468,13 @@
           $event.stopPropagation();
         }
         toastr.remove(scope.toastId, wasClicked);
+      };
+      
+      scope.refreshTimer = function(newTime) {
+        if (timeout) {
+          $interval.cancel(timeout);
+          timeout = createTimeout(newTime || scope.options.timeOut);
+        }
       };
 
       element.on('mouseleave', function() {

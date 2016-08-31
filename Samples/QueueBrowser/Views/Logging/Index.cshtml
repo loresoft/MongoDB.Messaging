@@ -142,7 +142,7 @@
                     <div role="tabpanel">
                       <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#properties-{{log.Id}}" aria-controls="properties{{log.Id}}" role="tab" data-toggle="tab">Properties</a></li>
-                        <li role="presentation"><a href="#error-{{log.Id}}" aria-controls="error-{{log.Id}}" role="tab" data-toggle="tab">Error</a></li>
+                        <li role="presentation" ng-if="log.Exception"><a href="#error-{{log.Id}}" aria-controls="error-{{log.Id}}" role="tab" data-toggle="tab">Error</a></li>
                       </ul>
                     </div>
                     <div class="tab-content">
@@ -166,7 +166,7 @@
                           </tbody>
                         </table>
                       </div>
-                      <div role="tabpanel" class="tab-pane" id="error-{{log.Id}}">
+                      <div role="tabpanel" class="tab-pane" id="error-{{log.Id}}" ng-if="log.Exception">
                         <table class="table table-bordered table-condensed table-striped">
                           <colgroup>
                             <col style="width: 250px" />

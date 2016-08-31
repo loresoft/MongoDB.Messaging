@@ -108,6 +108,6 @@ Backup*/
 UpgradeLog*.XML
 /Build
 /build.txt
-/Tools/MSBuildTasks
+/Tools
 *.GhostDoc.xml
 /Source/.vs/config
