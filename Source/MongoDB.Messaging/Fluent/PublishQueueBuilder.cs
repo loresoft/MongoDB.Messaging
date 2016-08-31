@@ -29,10 +29,7 @@ namespace MongoDB.Messaging.Fluent
         /// <value>
         /// The message being build.
         /// </value>
-        public Message Message
-        {
-            get { return _message; }
-        }
+        public Message Message => _message;
 
         /// <summary>
         /// Gets the queue instance.
@@ -40,10 +37,7 @@ namespace MongoDB.Messaging.Fluent
         /// <value>
         /// The queue instance.
         /// </value>
-        public IQueueContainer Container
-        {
-            get { return _queueContainer; }
-        }
+        public IQueueContainer Container => _queueContainer;
 
 
         /// <summary>

@@ -3,7 +3,7 @@ using System;
 namespace MongoDB.Messaging.Logging
 {
     /// <summary>
-    /// A fluent class to build a <see cref="Logger"/>.
+    /// A fluent class to build a logger.
     /// </summary>
     public class LoggerCreateBuilder
     {

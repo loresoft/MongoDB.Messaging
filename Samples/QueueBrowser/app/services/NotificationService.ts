@@ -19,7 +19,7 @@ module Messaging {
       self.$rootScope = $rootScope;
       self.hubProxy = new Hub('changeNotificationHub', {
         listeners: {
-          change: self.onChange.bind(self)
+          sendChange: self.onChange.bind(self)
         },
 
         errorHandler: self.errorHandler.bind(self),

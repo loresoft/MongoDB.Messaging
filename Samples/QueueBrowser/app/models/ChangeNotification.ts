@@ -3,7 +3,7 @@ module Messaging {
   "use strict";
 
   export interface IChangeNotification {
-    Timestamp?: number;
+    Timestamp?: Date;
     UniqueId?: number;
     Version?: number;
     Operation?: string;

@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The MongoDB Messaging library is a lightweight queue pub/sub processing library based on MongoDB data store.</description>
     <summary>MongoDB Messaging library</summary>
-    <copyright>Copyright (c) 2015, LoreSoft</copyright>
+    <copyright>Copyright (c) 2016, LoreSoft</copyright>
     <language>en-US</language>
     <tags>MongoDB Messaging Pub Sub Queue</tags>
     <dependencies>

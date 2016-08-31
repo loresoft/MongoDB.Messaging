@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using CommandLine;
 using MongoDB.Messaging;
 using MongoDB.Messaging.Logging;
-using MongoDB.Messaging.Service;
 using Sleep.Client.Logging;
 using Sleep.Messages;
 
@@ -15,7 +10,6 @@ namespace Sleep.Client
     public class Program
     {
         private static readonly Random _random = new Random();
-        private static int _counter = 1;
 
         public static void Main(string[] args)
         {

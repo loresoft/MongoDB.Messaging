@@ -7,13 +7,18 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using MongoDB.Messaging;
-using QueueBrowser.Notifications;
+using MongoDB.Messaging.SignalR;
 
 namespace QueueBrowser
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        private static readonly Lazy<ChangeNotificationService> _changeService = new Lazy<ChangeNotificationService>();
+        private static readonly Lazy<ChangeNotificationService> _changeService;
+
+        static WebApiApplication()
+        {
+            _changeService = new Lazy<ChangeNotificationService>(() => new ChangeNotificationService("MongoMessaging", "Messaging.*"));
+        }
 
 
         protected void Application_Start()
