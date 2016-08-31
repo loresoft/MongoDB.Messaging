@@ -82,7 +82,7 @@
                Value="$(PackageVersion)" />
   </Target>
 
-  <Target Name="Package" DependsOnTargets="Test">
+  <Target Name="Package" DependsOnTargets="Test;UpdateVersion">
     <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />
 
     <ItemGroup>
