@@ -14,7 +14,7 @@
     <language>en-US</language>
     <tags>MongoDB Messaging SignalR Change Notification</tags>
     <dependencies>
-      <dependency id="MongoDB.Driver" version="2.2.3" />
+      <dependency id="MongoDB.Driver" version="2.4.0" />
       <dependency id="MongoDB.Messaging" version="1.6.0" />
       <dependency id="Microsoft.AspNet.SignalR.Core" version="2.2.1" />
     </dependencies>

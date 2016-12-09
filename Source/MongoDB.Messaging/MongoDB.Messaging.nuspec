@@ -14,7 +14,7 @@
     <language>en-US</language>
     <tags>MongoDB Messaging Pub Sub Queue</tags>
     <dependencies>
-      <dependency id="MongoDB.Driver" version="2.2.3" />
+      <dependency id="MongoDB.Driver" version="2.4.0" />
     </dependencies>
   </metadata>
   <files>
