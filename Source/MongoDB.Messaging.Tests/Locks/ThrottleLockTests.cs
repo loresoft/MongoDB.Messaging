@@ -89,7 +89,7 @@ namespace MongoDB.Messaging.Tests.Locks
 
         private static IMongoCollection<LockData> GetCollection()
         {
-            var database = MongoFactory.GetDatabaseFromConnectionName("Messaging");
+            var database = MongoFactory.GetDatabaseFromConnectionString("mongodb://localhost/Messaging");
             var collection = database.GetCollection<LockData>("throttle-lock");
 
             return collection;

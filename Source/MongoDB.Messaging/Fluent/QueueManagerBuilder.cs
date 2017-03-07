@@ -30,7 +30,7 @@ namespace MongoDB.Messaging.Fluent
         /// </returns>
         public QueueManagerBuilder Connection(string name)
         {
-            Manager.ConnectionName = name;
+            Manager.ConnectionString = name;
             return this;
         }
 

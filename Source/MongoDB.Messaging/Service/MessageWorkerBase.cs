@@ -48,7 +48,7 @@ namespace MongoDB.Messaging.Service
             _repository = _container.Repository;
 
             _random = new Random();
-            _pollTimer = new Timer(PollQueue);
+            _pollTimer = new Timer(PollQueue, null, -1, -1);
         }
 
 

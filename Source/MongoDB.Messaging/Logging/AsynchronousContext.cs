@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace MongoDB.Messaging.Logging
 {
@@ -12,6 +14,9 @@ namespace MongoDB.Messaging.Logging
     public class AsynchronousContext : IPropertyContext
     {
         private readonly string _slotName = Guid.NewGuid().ToString("N");
+
+        [ThreadStatic]
+        private Dictionary<string, object> _dataSlot = new Dictionary<string, object>();
 
         /// <summary>
         /// Applies the context properties to the specified <paramref name="builder" />.
@@ -32,7 +37,8 @@ namespace MongoDB.Messaging.Logging
         /// </summary>
         public void Clear()
         {
-            System.Runtime.Remoting.Messaging.CallContext.FreeNamedDataSlot(_slotName);
+            if (_dataSlot.ContainsKey(_slotName))
+                _dataSlot.Remove(_slotName);
         }
 
         /// <summary>
@@ -132,13 +138,18 @@ namespace MongoDB.Messaging.Logging
 
         private IDictionary<string, object> GetDictionary()
         {
-            var data = System.Runtime.Remoting.Messaging.CallContext.LogicalGetData(_slotName);
+            var data = _dataSlot.ContainsKey(_slotName) ? _dataSlot[_slotName] : null;
             return data as IDictionary<string, object>;
         }
 
         private void SetDictionary(IDictionary<string, object> value)
         {
-            System.Runtime.Remoting.Messaging.CallContext.LogicalSetData(_slotName, value);
+            AsyncLocal<IDictionary<string, object>> lcoal = new AsyncLocal<IDictionary<string, object>>();
+
+            if (_dataSlot.ContainsKey(_slotName))
+                _dataSlot[_slotName] = value;
+            else
+                _dataSlot.Add(_slotName, value);
         }
     }
 #endif

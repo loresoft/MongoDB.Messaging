@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MongoDB.Messaging.Extensions
 {
@@ -19,13 +16,13 @@ namespace MongoDB.Messaging.Extensions
         /// <returns><c>true</c> if the pattern is matched; otherwise <c>false</c></returns>
         public static bool Like(this string input, string mask)
         {
-            var inputEnumerator = input.GetEnumerator();
-            var maskEnumerator = mask.GetEnumerator();
-
-            return Like(inputEnumerator, maskEnumerator);
+            var inputEnumerator = input.AsEnumerable().GetEnumerator();
+            var maskEnumerator = mask.AsEnumerable().GetEnumerator();
+            
+            return Like(inputEnumerator, maskEnumerator, input, mask);
         }
 
-        private static bool Like(CharEnumerator inputEnumerator, CharEnumerator maskEnumerator)
+        private static bool Like(IEnumerator<char> inputEnumerator, IEnumerator<char> maskEnumerator, string input, string mask)
         {
             while (maskEnumerator.MoveNext())
             {
@@ -39,9 +36,13 @@ namespace MongoDB.Messaging.Extensions
                     case '*':
                         do
                         {
-                            var inputTryAhead = (CharEnumerator)inputEnumerator.Clone();
-                            var maskTryAhead = (CharEnumerator)maskEnumerator.Clone();
-                            if (Like(inputTryAhead, maskTryAhead))
+                            var inputTryAhead = input.AsEnumerable().GetEnumerator();
+                            while (inputEnumerator.Current != inputTryAhead.Current && inputTryAhead.MoveNext()) ;
+                            
+                            var maskTryAhead = mask.AsEnumerable().GetEnumerator();
+                            while (maskEnumerator.Current != maskTryAhead.Current && maskTryAhead.MoveNext()) ;
+                            
+                            if (Like(inputTryAhead, maskTryAhead, input, mask))
                                 return true;
 
                         } while (inputEnumerator.MoveNext());

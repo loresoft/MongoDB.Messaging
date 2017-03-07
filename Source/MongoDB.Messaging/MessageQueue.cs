@@ -53,7 +53,7 @@ namespace MongoDB.Messaging
         /// Configure queue and subscriber with fluent builder.
         /// <code><![CDATA[
         /// MessageQueue.Default.Configure(c => c
-        ///     .Connection("Messaging")
+        ///     .Connection("mongodb://localhost/Messaging")
         ///     .Queue(q => q
         ///         .Name("queue-name")
         ///         .Description("description")

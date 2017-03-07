@@ -22,7 +22,7 @@ namespace MongoDB.Messaging.Tests
             var messageQueue = new MessageQueue(manager);
 
             messageQueue.Configure(c => c
-                 .Connection("Messaging")
+                 .Connection("mongodb://localhost/Messaging")
                  .ControlQueue("control-name")
                  .Queue(q => q
                      .Name("queue-name")
@@ -56,7 +56,7 @@ namespace MongoDB.Messaging.Tests
 
 
             manager.Should().NotBeNull();
-            manager.ConnectionName.Should().Be("Messaging");
+            manager.ConnectionString.Should().Be("mongodb://localhost/Messaging");
             manager.ControlName.Should().Be("control-name");
 
             manager.Queues.Count.Should().Be(2);

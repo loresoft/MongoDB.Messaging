@@ -11,12 +11,12 @@ namespace MongoDB.Messaging.Configuration
     public interface IQueueManager
     {
         /// <summary>
-        /// Gets or sets the name of the connection string.
+        /// Gets or sets the connection string.
         /// </summary>
         /// <value>
-        /// The name of the connection.
+        /// The connection string.
         /// </value>
-        string ConnectionName { get; set; }
+        string ConnectionString { get; set; }
         
         /// <summary>
         /// Gets or sets the name of the connection string for change notification.

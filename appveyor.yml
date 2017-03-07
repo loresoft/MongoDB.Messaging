@@ -9,11 +9,8 @@ services: mongodb
 before_build:
 - .\bootstrap.cmd
 build:
-  project: master.proj
+  project: Source\MongoDB.Messaging.sln
   verbosity: minimal
 test: off
 artifacts:
 - path: Build\*.nupkg
-deploy:
-- provider: Environment
-  name: MyGet

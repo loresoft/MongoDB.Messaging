@@ -28,7 +28,7 @@ namespace MongoDB.Messaging.Configuration
             _databaseLock = new object();
             _queues = new ConcurrentDictionary<string, IQueueContainer>(StringComparer.OrdinalIgnoreCase);
 
-            ConnectionName = "Messaging";
+            ConnectionString = "mongodb://localhost/Messaging";
             ControlName = "ServiceControlQueue";
             LockCollection = "ServiceLock";
         }
@@ -45,12 +45,12 @@ namespace MongoDB.Messaging.Configuration
 
 
         /// <summary>
-        /// Gets or sets the name of the connection string.
+        /// The connection string.
         /// </summary>
         /// <value>
-        /// The name of the connection.
+        /// The string of the connection.
         /// </value>
-        public string ConnectionName { get; set; }
+        public string ConnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the connection string for change notification.
@@ -193,9 +193,9 @@ namespace MongoDB.Messaging.Configuration
                 if (_database != null)
                     return;
 
-                _database = string.IsNullOrEmpty(ConnectionName)
+                _database = string.IsNullOrEmpty(ConnectionString)
                     ? MongoFactory.GetDatabaseFromConnectionString("mongodb://localhost/Messaging")
-                    : MongoFactory.GetDatabaseFromConnectionName(ConnectionName);
+                    : MongoFactory.GetDatabaseFromConnectionString(ConnectionString);
             }
         }
 

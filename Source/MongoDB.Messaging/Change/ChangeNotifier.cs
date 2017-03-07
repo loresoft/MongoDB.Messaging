@@ -28,14 +28,14 @@ namespace MongoDB.Messaging.Change
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeNotifier"/> class.
         /// </summary>
-        /// <param name="connectionName">The name of the connection string in the application config.</param>
-        /// <exception cref="ArgumentException"><paramref name="connectionName"/> is <see langword="null" /> or empty</exception>
-        public ChangeNotifier(string connectionName)
+        /// <param name="connectionString">The connection string.</param>
+        /// <exception cref="ArgumentException"><paramref name="connectionString"/> is <see langword="null" /> or empty</exception>
+        public ChangeNotifier(string connectionString)
         {
-            if (string.IsNullOrEmpty(connectionName))
-                throw new ArgumentException("Argument is null or empty", nameof(connectionName));
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentException("Argument is null or empty", nameof(connectionString));
 
-            _collection = new Lazy<IMongoCollection<ChangeRecord>>(() => GetCollection(connectionName));
+            _collection = new Lazy<IMongoCollection<ChangeRecord>>(() => GetCollection(connectionString));
         }
 
         /// <summary>
@@ -224,9 +224,9 @@ namespace MongoDB.Messaging.Change
         }
 
 
-        private IMongoCollection<ChangeRecord> GetCollection(string connectionName)
+        private IMongoCollection<ChangeRecord> GetCollection(string connectionString)
         {
-            var mongoUrl = MongoFactory.GetMongoUrl(connectionName);
+            var mongoUrl = MongoFactory.GetMongoUrl(connectionString);
             var client = new MongoClient(mongoUrl);
             return GetCollection(client);
         }

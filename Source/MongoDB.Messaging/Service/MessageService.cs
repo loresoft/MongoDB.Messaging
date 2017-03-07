@@ -175,8 +175,8 @@ namespace MongoDB.Messaging.Service
 
         private ChangeNotifier CreateNotifier()
         {
-            var connectionName = _manager.NotificationConnection ?? _manager.ConnectionName;
-            var notifier = new ChangeNotifier(connectionName);
+            var connectionString = _manager.NotificationConnection ?? _manager.ConnectionString;
+            var notifier = new ChangeNotifier(connectionString);
 
             return notifier;
         }
