@@ -1,14 +1,15 @@
 version: 1.7.0.{build}
-os: Visual Studio 2015
+os: Visual Studio 2017
 environment:
   Major: 1
-  Minor: 7
+  Minor: 8
   Patch: 0
 configuration: Release
 services: mongodb
 before_build:
 - .\bootstrap.cmd
 build:
+  publish_nuget: true
   project: Source\MongoDB.Messaging.sln
   verbosity: minimal
 test: off

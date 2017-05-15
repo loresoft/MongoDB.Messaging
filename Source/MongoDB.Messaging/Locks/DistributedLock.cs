@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Messaging.Security;
+using System.Threading;
 
 namespace MongoDB.Messaging.Locks
 {
