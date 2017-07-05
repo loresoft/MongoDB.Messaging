@@ -33,7 +33,7 @@ namespace MongoDB.Messaging.Storage
             return mongoDatabase;
         }
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD1_5
         /// <summary>
         /// Gets the <see cref="IMongoDatabase" /> with the specified connection name.
         /// </summary>
