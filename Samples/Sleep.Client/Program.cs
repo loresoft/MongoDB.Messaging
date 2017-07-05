@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using CommandLine;
 using MongoDB.Messaging;
 using MongoDB.Messaging.Logging;
@@ -21,8 +22,11 @@ namespace Sleep.Client
 
         private static void Initialize()
         {
+            var connectionString = ConfigurationManager.ConnectionStrings["MongoMessaging"]?.ConnectionString
+                ?? "mongodb://localhost/Messaging";
+
             MessageQueue.Default.Configure(c => c
-                .Connection("MongoMessaging")
+                .ConnectionString(connectionString)
                 .Queue(s => s
                     .Name(SleepMessage.QueueName)
                     .Retry(5)

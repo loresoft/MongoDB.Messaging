@@ -110,4 +110,4 @@ UpgradeLog*.XML
 /build.txt
 /Tools
 *.GhostDoc.xml
-/Source/.vs/config
+.vs/config

@@ -4,10 +4,10 @@
   <PropertyGroup>
     <BuildFolder>$(MSBuildProjectDirectory)\Build</BuildFolder>
     <ToolFolder>$(MSBuildProjectDirectory)\Tools</ToolFolder>
-    <SourceFolder>$(MSBuildProjectDirectory)\Source</SourceFolder>
+    <SourceFolder>$(MSBuildProjectDirectory)\src</SourceFolder>
+    <TestFolder>$(MSBuildProjectDirectory)\test</TestFolder>
 
     <MSBuildCommunityTasksPath>$(ToolFolder)\MSBuildTasks\tools</MSBuildCommunityTasksPath>
-    <XUnitTasksPath>$(ToolFolder)\xunit.runner.console\tools</XUnitTasksPath>
   </PropertyGroup>
 
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets"/>
@@ -20,8 +20,8 @@
 
     <BuildConfiguration  Condition=" '$(BuildConfiguration)' == '' ">Release</BuildConfiguration>
 
-    <Major Condition=" '$(Major)' == '' ">1</Major>
-    <Minor Condition=" '$(Minor)' == '' ">7</Minor>
+    <Major Condition=" '$(Major)' == '' ">2</Major>
+    <Minor Condition=" '$(Minor)' == '' ">0</Minor>
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
 
     <AssemblyVersion>$(Major).$(Minor).0.0</AssemblyVersion>
@@ -29,6 +29,11 @@
     <AssemblyInformationalVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</AssemblyInformationalVersion>
     <PackageVersion>$(Major).$(Minor).$(Revision).$(BuildNumber)</PackageVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <SolutionFiles Include="*.sln"/>
+  </ItemGroup>
+
 
   <Target Name="Clean">
     <DeleteTree Directories="**\obj\**;**\bin\**" />
@@ -55,84 +60,41 @@
                   AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
                   AssemblyTrademark=""
                   ComVisible="false"/>
+
+    <exec Command="dotnet restore &quot;%(SolutionFiles.Identity)&quot;"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
   </Target>
   
   <Target Name="Compile" DependsOnTargets="Clean;Version">
-    <MSBuild Projects="$(SourceFolder)\MongoDB.Messaging.sln"
+    <MSBuild Projects="%(SolutionFiles.Identity)"
              Properties="Configuration=$(BuildConfiguration)"/>
   </Target>
 
   <Target Name="Test" DependsOnTargets="Compile">
     <ItemGroup>
-      <TestAssemblies Include="$(SourceFolder)\**\*.Tests\bin\$(BuildConfiguration)\*.Tests.dll"/>
+      <TestAssemblies Include="$(TestFolder)\**\*.Tests.csproj"/>
     </ItemGroup>
 
-    <exec Command="$(XUnitTasksPath)\xunit.console.exe &quot;%(TestAssemblies.Identity)&quot; -appveyor"/>
+    <exec Command="dotnet test &quot;%(TestAssemblies.Identity)&quot; --configuration $(BuildConfiguration)"
+          WorkingDirectory="$(TestFolder)\%(TestAssemblies.RecursiveDir)"/>
   </Target>
 
 
-  <Target Name="UpdateVersion" DependsOnTargets="Version">
-    <ItemGroup>
-      <NuGetFiles Include="$(SourceFolder)\**\*.nuspec"/>
-    </ItemGroup>
 
-    <XmlUpdate XmlFileName="%(NuGetFiles.Identity)"
-               Prefix="d" Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
-               XPath="/d:package/d:metadata/d:dependencies/d:dependency[@id='MongoDB.Messaging']/@version"
-               Value="$(PackageVersion)" />
-  </Target>
 
-  <Target Name="Package" DependsOnTargets="Test;UpdateVersion">
+  <Target Name="Package" DependsOnTargets="Test">
     <MakeDir Directories="$(BuildFolder)" Condition="!EXISTS($(BuildFolder))" />
 
     <ItemGroup>
-      <NuGetFiles Include="$(SourceFolder)\**\*.nuspec"/>
+      <ProjectFiles Include="$(SourceFolder)\**\*.csproj"/>
     </ItemGroup>
 
-    <NuGetPack File="%(NuGetFiles.Identity)"
-               OutputDirectory="$(BuildFolder)"
-               Version="$(PackageVersion)"
-               Symbols="true"  />
-  </Target>
-
-  <Target Name="Publish" DependsOnTargets="Package">
-    <!-- 
-      Requires API key to be set ...
-      nuget.exe setapikey <myget-key> -Source https://www.myget.org/F/loresoft/
-    -->
-    <ItemGroup>
-      <NuGetPackages Include="$(BuildFolder)\*.nupkg" Exclude="$(BuildFolder)\*.symbols.nupkg"/>
-      <NuGetSymbols Include="$(BuildFolder)\*.symbols.nupkg" />
-    </ItemGroup>
-
-    <!-- Push to MyGet on Build -->
-    <NuGetPush File="%(NuGetPackages.Identity)"
-               Source="https://www.myget.org/F/loresoft/" />
-
-    <!-- Push to Symbols on Build -->
-    <NuGetPush File="%(NuGetSymbols.Identity)"
-               Source="https://nuget.symbolsource.org/MyGet/loresoft" />
-  </Target>
-
-
-  <Target Name="Build">
-    <CallTarget Targets="Package" />
-  </Target>
-  <Target Name="Refresh">
-    <!-- Update NuGet dependencies to match package version -->
-    
-    <!-- MongoDB -->
-    <XmlRead XmlFileName="$(SourceFolder)\MongoDB.Messaging\packages.config"
-             XPath="/packages/package[@id='MongoDB.Driver']/@version">
-      <Output TaskParameter="Value" ItemName="MongoDBDriverVersion" />
-    </XmlRead>
-
-    <Message Text="MongoDB.Driver Version: @(MongoDBDriverVersion)"/>
-
-    <XmlUpdate XmlFileName="$(SourceFolder)\MongoDB.Messaging\MongoDB.Messaging.nuspec"
-               Prefix="d" Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
-               XPath="/d:package/d:metadata/d:dependencies/d:dependency[@id='MongoDB.Driver']/@version"
-               Value="@(MongoDBDriverVersion)" />
+    <exec Command="dotnet pack &quot;%(ProjectFiles.Identity)&quot; --output &quot;$(BuildFolder)&quot; --include-symbols --include-source --configuration $(BuildConfiguration) -p:Version=$(PackageVersion)"
+          WorkingDirectory="$(SourceFolder)\%(ProjectFiles.RecursiveDir)"/>
 
   </Target>
+
+  <Target Name="Build" DependsOnTargets="Package">
+  </Target>
+
 </Project>
