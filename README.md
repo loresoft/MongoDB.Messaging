@@ -78,7 +78,7 @@ An example of using the fluent api to configure the sleep queue.
 
 ```c#
 MessageQueue.Default.Configure(c => c
-    .Connection("MongoMessaging")
+    .ConnectionString("mongodb://localhost/Messaging")
     .Queue(s => s
         .Name(SleepMessage.QueueName)
         .Priority(MessagePriority.Normal)
@@ -139,7 +139,7 @@ To subscribe to a queue, use the fluent api. The subscribe handler must implemen
 
 ```c#
 MessageQueue.Default.Configure(c => c
-    .Connection("MongoMessaging")
+    .ConnectionString("mongodb://localhost/Messaging")
     .Subscribe(s => s
         .Queue(SleepMessage.QueueName)
         .Handler<SleepHandler>()
@@ -151,7 +151,7 @@ To speed up processing, you can monitor the oplog for changes to trigger process
 
 ```c#
 MessageQueue.Default.Configure(c => c
-    .Connection("MongoMessaging")
+    .ConnectionString("mongodb://localhost/Messaging")
     .Subscribe(s => s
         .Queue(SleepMessage.QueueName)
         .Handler<SleepHandler>()
