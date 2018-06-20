@@ -304,6 +304,7 @@ namespace MongoDB.Messaging.Configuration
         private void DequeueIndex(IMongoCollection<Message> collection)
         {
             var dequeueIndex = Builders<Message>.IndexKeys
+                .Ascending(m => m.State)
                 .Ascending(m => m.Priority)
                 .Ascending(m => m.Id);
 
