@@ -1,10 +1,10 @@
-﻿using System;
+﻿using MongoDB.Messaging.Change;
+using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using MongoDB.Messaging.Change;
-using MongoDB.Messaging.Configuration;
-using MongoDB.Messaging.Logging;
 
 namespace MongoDB.Messaging.Service
 {
@@ -20,7 +20,6 @@ namespace MongoDB.Messaging.Service
         private readonly IQueueManager _manager;
 
         private int _activeProcesses;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageService"/> class.
@@ -46,7 +45,6 @@ namespace MongoDB.Messaging.Service
             _activeProcesses = 0;
 
         }
-
 
         /// <summary>
         /// Gets the queue manager for the service.
@@ -89,7 +87,6 @@ namespace MongoDB.Messaging.Service
             get { return _notifier.Value; }
         }
 
-
         /// <summary>
         /// Start the service and all the <see cref="Processors" />.
         /// </summary>
@@ -108,7 +105,7 @@ namespace MongoDB.Messaging.Service
                 catch (Exception ex)
                 {
                     _logger.Error()
-                        .Message("Error trying to start processor '{0}'.", process.Name)
+                        .Message($"Error trying to start processor '{process.NameToListen}-{process.NameToWrite}'.")
                         .Exception(ex)
                         .Write();
                 }
@@ -143,7 +140,6 @@ namespace MongoDB.Messaging.Service
                 Thread.Sleep(500);
         }
 
-
         /// <summary>
         /// Signal the processor that a worker has begun.
         /// </summary>
@@ -159,7 +155,6 @@ namespace MongoDB.Messaging.Service
         {
             Interlocked.Decrement(ref _activeProcesses);
         }
-
 
         private IList<IMessageProcessor> CreateProcesses()
         {
@@ -180,6 +175,5 @@ namespace MongoDB.Messaging.Service
 
             return notifier;
         }
-
     }
 }

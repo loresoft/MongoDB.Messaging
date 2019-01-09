@@ -1,8 +1,8 @@
+using MongoDB.Messaging.Logging;
+using MongoDB.Messaging.Subscription;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using MongoDB.Messaging.Logging;
-using MongoDB.Messaging.Subscription;
 
 namespace MongoDB.Messaging.Service
 {
@@ -12,7 +12,7 @@ namespace MongoDB.Messaging.Service
     public class MessageWorker : MessageWorkerBase
     {
         private static readonly ILogger _logger = Logger.CreateLogger<MessageWorker>();
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageWorker"/> class.
         /// </summary>
@@ -29,7 +29,7 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         protected override void Process()
         {
-            var message = Repository.Dequeue().Result;
+            var message = RepositoryToListen.Dequeue().Result;
 
             // keep looping till queue is empty
             while (message != null)
@@ -41,7 +41,7 @@ namespace MongoDB.Messaging.Service
                     break;
 
                 // next item
-                message = Repository.Dequeue().Result;
+                message = RepositoryToListen.Dequeue().Result;
             }
         }
 
@@ -64,7 +64,7 @@ namespace MongoDB.Messaging.Service
                     .Message(statusMessage)
                     .Write();
 
-                Repository.UpdateStatus(id, statusMessage)
+                RepositoryToListen.UpdateStatus(id, statusMessage)
                     .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
 
                 Stopwatch watch = Stopwatch.StartNew();
@@ -79,7 +79,7 @@ namespace MongoDB.Messaging.Service
                     .Message(statusMessage)
                     .Write();
 
-                Repository.MarkComplete(id, result, statusMessage, expireDate)
+                RepositoryToListen.MarkComplete(id, result, statusMessage, expireDate)
                     .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
             }
             catch (Exception ex)
@@ -92,7 +92,7 @@ namespace MongoDB.Messaging.Service
                     .Exception(ex)
                     .Write();
 
-                var task = Repository.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
+                var task = RepositoryToListen.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
 
                 // only retry when successfully set result to error
                 task.ContinueWith(t => RetryMessage(t.Result, ex), TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -129,7 +129,7 @@ namespace MongoDB.Messaging.Service
                 .Write();
 
             // schedule retry 
-            Repository.Schedule(message.Id, nextAttempt);
+            RepositoryToListen.Schedule(message.Id, nextAttempt);
         }
 
         private MessageResult ProcessSubscriber(Message message)
@@ -150,7 +150,7 @@ namespace MongoDB.Messaging.Service
             // can't process messages without subscriber, don't start again
             Shutdown();
 
-            throw new InvalidOperationException(string.Format("Error creating Subscriber for queue '{0}'.", Configuration.Name));
+            throw new InvalidOperationException($"Error creating Subscriber for queue '{Configuration.NameToListen}-{Configuration.NameToWrite}'.");
         }
 
         private DateTime? GetExpire(MessageResult result)

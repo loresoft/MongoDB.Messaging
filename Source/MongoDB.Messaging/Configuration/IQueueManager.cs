@@ -67,11 +67,12 @@ namespace MongoDB.Messaging.Configuration
         IQueueContainer Register(IQueueConfiguration queueConfiguration);
 
         /// <summary>
-        /// Loads the specified queue by name. If the queue has not been configured, it will be created.
+        /// Loads the specified queues by name. If the queues have not been configured, they will be created.
         /// </summary>
-        /// <param name="queueName">Name of the queue.</param>
-        /// <returns>An instance of <see cref="IQueueContainer"/> with the queue name.</returns>
-        IQueueContainer Load(string queueName);
+        /// <param name="queueNameToListen">Name of the listen queue.</param>
+        /// <param name="queueNameToWrite">Name of the write queue.</param>
+        /// <returns>An instance of <see cref="IQueueContainer"/> with the queue names.</returns>
+        IQueueContainer Load(string queueNameToListen, string queueNameToWrite);
 
         /// <summary>
         /// Sets the underlying storage <paramref name="database"/>.

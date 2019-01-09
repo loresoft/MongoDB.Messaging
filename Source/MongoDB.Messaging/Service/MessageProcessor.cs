@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using MongoDB.Bson;
 using MongoDB.Messaging.Change;
-using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace MongoDB.Messaging.Service
 {
@@ -41,20 +40,30 @@ namespace MongoDB.Messaging.Service
                 return;
 
             // subscribe to notifications
-            var filter = container.Repository.Collection.CollectionNamespace.FullName;
+            var filter = container.RepositoryToListen.Collection.CollectionNamespace.FullName;
             service.Notifier.Subscribe(this, filter);
         }
 
-
         /// <summary>
-        /// Gets the name of the processor.
+        /// Gets the name of the listen processor.
         /// </summary>
         /// <value>
-        /// The name of the processor.
+        /// The name of the listen processor.
         /// </value>
-        public string Name
+        public string NameToListen
         {
-            get { return _configuration.Name; }
+            get { return _configuration.NameToListen; }
+        }
+
+        /// <summary>
+        /// Gets the name of the write processor.
+        /// </summary>
+        /// <value>
+        /// The name of the write processor.
+        /// </value>
+        public string NameToWrite
+        {
+            get { return _configuration.NameToWrite; }
         }
 
         /// <summary>
@@ -127,7 +136,6 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         public void Start()
         {
-
             // Start workers
             foreach (var worker in _workers.Value)
             {
@@ -252,7 +260,7 @@ namespace MongoDB.Messaging.Service
 
             for (int i = 0; i < count; i++)
             {
-                string name = $"{_configuration.Name}-Worker-{i + 1:00}";
+                string name = $"{_configuration.NameToListen}-{_configuration.NameToWrite}-Worker-{i + 1:00}";
                 var worker = new MessageWorker(this, name);
 
                 _logger.Trace().Message("Created worker '{0}'.", worker.Name).Write();
@@ -260,7 +268,7 @@ namespace MongoDB.Messaging.Service
             }
 
             // add health work 
-            string healthName = $"{_configuration.Name}-Worker-Health";
+            string healthName = $"{_configuration.NameToListen}-{_configuration.NameToWrite}-Worker-Health";
             var healthWorker = new HealthWorker(this, healthName);
             workers.Add(healthWorker);
 

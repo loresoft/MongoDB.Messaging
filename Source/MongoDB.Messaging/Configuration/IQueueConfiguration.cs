@@ -9,12 +9,20 @@ namespace MongoDB.Messaging.Configuration
     public interface IQueueConfiguration
     {
         /// <summary>
-        /// Gets or sets the name of the queue.
+        /// Gets or sets the name of the listen queue.
         /// </summary>
         /// <value>
-        /// The name of the queue.
+        /// The name of the listen queue.
         /// </value>
-        string Name { get; set; }
+        string NameToListen { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the write queue.
+        /// </summary>
+        /// <value>
+        /// The name of the write queue.
+        /// </value>
+        string NameToWrite { get; set; }
 
         /// <summary>
         /// Gets or sets the user description for the queue.

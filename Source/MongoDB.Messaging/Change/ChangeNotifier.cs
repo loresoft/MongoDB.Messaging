@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Messaging.Extensions;
 using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Storage;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MongoDB.Messaging.Change
 {
@@ -17,13 +16,12 @@ namespace MongoDB.Messaging.Change
     /// </summary>
     public class ChangeNotifier
     {
-        private static readonly ILogger _logger = Logger.CreateLogger<ChangeNotifier>();  
+        private static readonly ILogger _logger = Logger.CreateLogger<ChangeNotifier>();
 
         private readonly List<ISubscription> _subscribers = new List<ISubscription>();
         private readonly Lazy<IMongoCollection<ChangeRecord>> _collection;
 
         private CancellationTokenSource _tokenSource = null;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeNotifier"/> class.
@@ -51,7 +49,6 @@ namespace MongoDB.Messaging.Change
             _collection = new Lazy<IMongoCollection<ChangeRecord>>(() => GetCollection(mongoClient));
         }
 
-
         /// <summary>
         /// Gets or sets the last timestamp that was notified.  When notification is started, it will start notifications from this point.
         /// </summary>
@@ -67,7 +64,6 @@ namespace MongoDB.Messaging.Change
         /// The change notification subscribers.
         /// </value>
         public IReadOnlyCollection<ISubscription> Subscribers => _subscribers;
-
 
         /// <summary>
         /// Start listening for changes in the oplog. 
@@ -106,7 +102,6 @@ namespace MongoDB.Messaging.Change
             Interlocked.Exchange(ref _tokenSource, null);
         }
 
-
         /// <summary>
         /// Subscribe to change notification with the specified <paramref name="subscriber"/> and collection namespace <paramref name="filter"/>.
         /// </summary>
@@ -141,7 +136,6 @@ namespace MongoDB.Messaging.Change
                 return _subscribers.Remove(subscription);
         }
 
-
         /// <summary>
         /// Publish the specified change record to all <see cref="Subscribers"/>.
         /// </summary>
@@ -171,7 +165,6 @@ namespace MongoDB.Messaging.Change
                 foreach (var d in deadSubscribers)
                     _subscribers.Remove(d);
         }
-
 
         private async Task StartCursorAsync(CancellationToken token)
         {
@@ -203,7 +196,6 @@ namespace MongoDB.Messaging.Change
             }
         }
 
-
         private BsonTimestamp GetTimestamp()
         {
             if (LastNotification != null && LastNotification != default(BsonTimestamp))
@@ -223,7 +215,6 @@ namespace MongoDB.Messaging.Change
             return changeRecord.Namespace.Like(filter);
         }
 
-
         private IMongoCollection<ChangeRecord> GetCollection(string connectionString)
         {
             var mongoUrl = MongoFactory.GetMongoUrl(connectionString);
@@ -240,11 +231,10 @@ namespace MongoDB.Messaging.Change
             return collection;
         }
 
-
         private static void VerifyCollection(IMongoDatabase database)
         {
             var filter = new BsonDocument("name", "oplog.rs");
-            var collections = database.ListCollections(new ListCollectionsOptions {Filter = filter});
+            var collections = database.ListCollections(new ListCollectionsOptions { Filter = filter });
             bool exists = collections.ToList().Any();
             if (exists)
                 return;
@@ -266,6 +256,5 @@ namespace MongoDB.Messaging.Change
                 .Exception(exception)
                 .Write();
         }
-
     }
 }

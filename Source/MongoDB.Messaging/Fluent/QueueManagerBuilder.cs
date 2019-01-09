@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Messaging.Configuration;
+﻿using MongoDB.Messaging.Configuration;
+using System;
 
 namespace MongoDB.Messaging.Fluent
 {
@@ -89,6 +85,5 @@ namespace MongoDB.Messaging.Fluent
 
             return this;
         }
-
     }
 }

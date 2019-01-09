@@ -1,4 +1,3 @@
-using System;
 using MongoDB.Messaging.Configuration;
 
 namespace MongoDB.Messaging.Fluent
@@ -16,13 +15,12 @@ namespace MongoDB.Messaging.Fluent
         /// </summary>
         /// <param name="manager">The queue manager.</param>
         /// <param name="message">The message to update.</param>
-        public PublishQueueBuilder(IQueueManager manager, Message message) 
+        public PublishQueueBuilder(IQueueManager manager, Message message)
             : base(manager)
         {
             _message = message;
         }
 
-        
         /// <summary>
         /// Gets the message being built.
         /// </summary>
@@ -38,21 +36,20 @@ namespace MongoDB.Messaging.Fluent
         /// The queue instance.
         /// </value>
         public IQueueContainer Container => _queueContainer;
-
-
+        
         /// <summary>
-        /// Start building a message to a queue with the specified name.
+        /// Start building a message to the queues with the specified names.
         /// </summary>
-        /// <param name="name">The name of the queue.</param>
+        /// <param name="nameToListen">The name of the listen queue.</param>
+        /// <param name="nameToWrite">The name of the write queue.</param>
         /// <returns>A fluent interface to build the queue message.</returns>
-        public MessageBuilder Queue(string name)
+        public MessageBuilder Queue(string nameToListen, string nameToWrite)
         {
             // load queue, apply defaults to message
-            _queueContainer = Manager.Load(name);            
+            _queueContainer = Manager.Load(nameToListen, nameToWrite);
             _queueContainer.ApplyDefaults(_message);
 
             return new MessageBuilder(_message); ;
         }
-
     }
 }

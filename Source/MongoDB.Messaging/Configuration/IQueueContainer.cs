@@ -1,5 +1,4 @@
-﻿using System;
-using MongoDB.Messaging.Storage;
+﻿using MongoDB.Messaging.Storage;
 
 namespace MongoDB.Messaging.Configuration
 {
@@ -9,20 +8,36 @@ namespace MongoDB.Messaging.Configuration
     public interface IQueueContainer
     {
         /// <summary>
-        /// Gets the name of the queue.
+        /// Gets the name of the listen queue.
         /// </summary>
         /// <value>
-        /// The name of the queue.
+        /// The name of the listen queue.
         /// </value>
-        string Name { get; }
+        string NameToListen { get; }
 
         /// <summary>
-        /// Gets the storage repository.
+        /// Gets the name of the write queue.
         /// </summary>
         /// <value>
-        /// The storage repository.
+        /// The name of the write queue.
         /// </value>
-        IQueueRepository Repository { get; }
+        string NameToWrite { get; }
+
+        /// <summary>
+        /// Gets the listen repository.
+        /// </summary>
+        /// <value>
+        /// The listen repository.
+        /// </value>
+        IQueueRepository RepositoryToListen { get; }
+
+        /// <summary>
+        /// Gets the write repository.
+        /// </summary>
+        /// <value>
+        /// The write repository.
+        /// </value>
+        IQueueRepository RepositoryToWrite { get; }
 
         /// <summary>
         /// Gets the queue configuration.

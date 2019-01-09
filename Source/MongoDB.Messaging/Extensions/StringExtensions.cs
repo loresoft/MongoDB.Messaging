@@ -18,7 +18,7 @@ namespace MongoDB.Messaging.Extensions
         {
             var inputEnumerator = input.AsEnumerable().GetEnumerator();
             var maskEnumerator = mask.AsEnumerable().GetEnumerator();
-            
+
             return Like(inputEnumerator, maskEnumerator, input, mask);
         }
 
@@ -38,10 +38,10 @@ namespace MongoDB.Messaging.Extensions
                         {
                             var inputTryAhead = input.AsEnumerable().GetEnumerator();
                             while (inputEnumerator.Current != inputTryAhead.Current && inputTryAhead.MoveNext()) ;
-                            
+
                             var maskTryAhead = mask.AsEnumerable().GetEnumerator();
                             while (maskEnumerator.Current != maskTryAhead.Current && maskTryAhead.MoveNext()) ;
-                            
+
                             if (Like(inputTryAhead, maskTryAhead, input, mask))
                                 return true;
 
@@ -61,6 +61,5 @@ namespace MongoDB.Messaging.Extensions
 
             return !inputEnumerator.MoveNext();
         }
-
     }
 }

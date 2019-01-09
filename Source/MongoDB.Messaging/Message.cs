@@ -1,8 +1,8 @@
-using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Messaging.Security;
+using System;
 
 namespace MongoDB.Messaging
 {
@@ -23,7 +23,6 @@ namespace MongoDB.Messaging
             Created = DateTime.UtcNow;
             Updated = DateTime.UtcNow;
         }
-
 
         /// <summary>
         /// Gets or sets the identifier for the message.
@@ -62,7 +61,6 @@ namespace MongoDB.Messaging
         /// </value>
         [BsonIgnoreIfNull]
         public string Correlation { get; set; }
-
 
         /// <summary>
         /// Gets or sets the queue processing state of the message.
@@ -126,7 +124,6 @@ namespace MongoDB.Messaging
         /// </value>
         public int Priority { get; set; }
 
-
         /// <summary>
         /// Gets or sets the number of times the message should retry on error. Use zero to prevent retry.
         /// </summary>
@@ -156,7 +153,6 @@ namespace MongoDB.Messaging
         [BsonIgnoreIfNull]
         public DateTime? Scheduled { get; set; }
 
-
         /// <summary>
         /// Gets or sets the processing start UTC time.
         /// </summary>
@@ -184,8 +180,6 @@ namespace MongoDB.Messaging
         [BsonIgnoreIfNull]
         public DateTime? Expire { get; set; }
 
-
-
         /// <summary>
         /// Gets or sets the name of the user who queued the message.
         /// </summary>
@@ -194,7 +188,6 @@ namespace MongoDB.Messaging
         /// </value>
         [BsonIgnoreIfNull]
         public string UserName { get; set; }
-
 
         /// <summary>
         /// Gets or sets the date the entity was created in UTC time.

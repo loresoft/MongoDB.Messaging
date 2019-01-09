@@ -67,7 +67,7 @@ namespace MongoDB.Messaging.Subscription
                 return;
 
             // fire and forget or block?
-            _container.Repository.UpdateStatus(_message.Id, message, step);
+            _container.RepositoryToWrite.UpdateStatus(_message.Id, message, step);
         }
     }
 }

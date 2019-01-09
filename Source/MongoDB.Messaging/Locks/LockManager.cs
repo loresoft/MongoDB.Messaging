@@ -1,6 +1,5 @@
-using System;
 using MongoDB.Driver;
-using MongoDB.Messaging.Security;
+using System;
 
 namespace MongoDB.Messaging.Locks
 {

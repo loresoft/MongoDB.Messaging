@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using MongoDB.Messaging.Configuration;
+﻿using MongoDB.Messaging.Configuration;
 using MongoDB.Messaging.Fluent;
+using System;
+using System.Threading.Tasks;
 
 namespace MongoDB.Messaging
 {
@@ -43,7 +43,6 @@ namespace MongoDB.Messaging
         {
             get { return _manager; }
         }
-
 
         /// <summary>
         /// Configure the message queues with the specified fluent builder.
@@ -115,7 +114,7 @@ namespace MongoDB.Messaging
                 throw new InvalidOperationException("Could not find queue to publish message.");
 
             // enqueue on repository
-            return container.Repository.Enqueue(message);
+            return container.RepositoryToListen.Enqueue(message);
         }
 
         /// <summary>
@@ -154,7 +153,7 @@ namespace MongoDB.Messaging
                 throw new InvalidOperationException("Could not find queue to publish message.");
 
             // schedule on repository
-            return container.Repository.Schedule(message);
+            return container.RepositoryToWrite.Schedule(message);
         }
 
         #region Singleton

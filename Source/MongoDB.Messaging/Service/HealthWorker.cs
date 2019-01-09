@@ -25,7 +25,7 @@ namespace MongoDB.Messaging.Service
         {
             // create throttle lock to only allow one run per schedule
             var lockCollection = Configuration.LockCollection ?? "ServiceLock";
-            var collection = Repository.Collection.Database.GetCollection<LockData>(lockCollection);
+            var collection = RepositoryToListen.Collection.Database.GetCollection<LockData>(lockCollection);
             _lockManager = new ThrottleLock(collection, Configuration.HealthCheck);
         }
 
@@ -81,7 +81,7 @@ namespace MongoDB.Messaging.Service
 
             var updateOptions = new UpdateOptions { IsUpsert = false };
 
-            var t = Repository.Collection.UpdateManyAsync(
+            var t = RepositoryToListen.Collection.UpdateManyAsync(
                 filter,
                 updateDefinition,
                 updateOptions);
@@ -113,7 +113,7 @@ namespace MongoDB.Messaging.Service
 
             var updateOptions = new UpdateOptions { IsUpsert = false };
 
-            var t = Repository.Collection.UpdateManyAsync(
+            var t = RepositoryToListen.Collection.UpdateManyAsync(
                 filter,
                 updateDefinition,
                 updateOptions);

@@ -1,10 +1,9 @@
+using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Logging;
+using MongoDB.Messaging.Storage;
 using System;
 using System.Diagnostics;
 using System.Threading;
-
-using MongoDB.Messaging.Logging;
-using MongoDB.Messaging.Configuration;
-using MongoDB.Messaging.Storage;
 
 namespace MongoDB.Messaging.Service
 {
@@ -18,7 +17,8 @@ namespace MongoDB.Messaging.Service
         private readonly IMessageProcessor _processor;
         private readonly IQueueContainer _container;
         private readonly IQueueConfiguration _configuration;
-        private readonly IQueueRepository _repository;
+        private readonly IQueueRepository _repositoryToListen;
+        private readonly IQueueRepository _repositoryToWrite;
         private readonly Timer _pollTimer;
         private readonly Random _random;
         private readonly string _name;
@@ -45,12 +45,12 @@ namespace MongoDB.Messaging.Service
             _processor = processor;
             _container = _processor.Container;
             _configuration = _container.Configuration;
-            _repository = _container.Repository;
+            _repositoryToListen = _container.RepositoryToListen;
+            _repositoryToWrite = _container.RepositoryToWrite;
 
             _random = new Random();
             _pollTimer = new Timer(PollQueue, null, -1, -1);
         }
-
 
         /// <summary>
         /// Gets the name of the worker.
@@ -84,7 +84,6 @@ namespace MongoDB.Messaging.Service
         {
             get { return _isAwaitingShutdown; }
         }
-
 
         /// <summary>
         /// Gets the parent processor.
@@ -120,16 +119,26 @@ namespace MongoDB.Messaging.Service
         }
 
         /// <summary>
-        /// Gets the storage repository.
+        /// Gets the listen repository.
         /// </summary>
         /// <value>
-        /// The storage repository.
+        /// The listen repository.
         /// </value>
-        public IQueueRepository Repository
+        public IQueueRepository RepositoryToListen
         {
-            get { return _repository; }
+            get { return _repositoryToListen; }
         }
 
+        /// <summary>
+        /// Gets the write repository.
+        /// </summary>
+        /// <value>
+        /// The write repository.
+        /// </value>
+        public IQueueRepository RepositoryToWrite
+        {
+            get { return _repositoryToWrite; }
+        }
 
         /// <summary>
         /// Gets the poll time.
@@ -141,8 +150,6 @@ namespace MongoDB.Messaging.Service
         {
             get { return _configuration.PollTime; }
         }
-
-
 
         /// <summary>
         /// Start the worker processing messages from the queue.
@@ -178,7 +185,6 @@ namespace MongoDB.Messaging.Service
             StartTimer(TimeSpan.Zero);
         }
 
-
         /// <summary>
         /// Signal that a worker has begun.
         /// </summary>
@@ -196,7 +202,6 @@ namespace MongoDB.Messaging.Service
             Interlocked.Decrement(ref _active);
             _processor.EndWork();
         }
-
 
         private void StartTimer(TimeSpan pollTime)
         {
@@ -225,7 +230,6 @@ namespace MongoDB.Messaging.Service
         {
             _pollTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
         }
-
 
         // called in background thread
         private void PollQueue(object state)
@@ -264,9 +268,7 @@ namespace MongoDB.Messaging.Service
 
                 StartTimer(PollTime);
             }
-
         }
-
 
         /// <summary>
         /// Process the underlying queue.

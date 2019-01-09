@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using MongoDB.Messaging.Logging;
+using MongoDB.Messaging.Storage;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
-using MongoDB.Messaging.Logging;
-using MongoDB.Messaging.Storage;
 
 namespace MongoDB.Messaging.Configuration
 {
@@ -42,7 +42,6 @@ namespace MongoDB.Messaging.Configuration
         {
             _database = database;
         }
-
 
         /// <summary>
         /// The connection string.
@@ -113,7 +112,6 @@ namespace MongoDB.Messaging.Configuration
             }
         }
 
-
         /// <summary>
         /// Registers a queue with the specified configuration.
         /// </summary>
@@ -127,8 +125,7 @@ namespace MongoDB.Messaging.Configuration
             if (queueConfiguration == null)
                 throw new ArgumentNullException(nameof(queueConfiguration));
 
-
-            var queue = Load(queueConfiguration.Name);
+            var queue = Load(queueConfiguration.NameToListen, queueConfiguration.NameToWrite);
 
             // update config
             var config = queue.Configuration;
@@ -148,25 +145,26 @@ namespace MongoDB.Messaging.Configuration
         }
 
         /// <summary>
-        /// Loads the specified queue by name. If the queue has not been configured, it will be created.
+        /// Loads the specified queues by name. If the queues have not been configured, they will be created.
         /// </summary>
-        /// <param name="queueName">Name of the queue.</param>
+        /// <param name="queueNameToListen">Name of the listen queue.</param>
+        /// <param name="queueNameToWrite">Name of the write queue.</param>
         /// <returns>
-        /// An instance of <see cref="IQueueContainer" /> with the queue name.
+        /// An instance of <see cref="IQueueContainer" /> with the queue names.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">queueName</exception>
         /// <exception cref="System.ArgumentException">The queue name is invalid.;queueName</exception>
-        public IQueueContainer Load(string queueName)
+        public IQueueContainer Load(string queueNameToListen, string queueNameToWrite)
         {
-            if (queueName == null)
-                throw new ArgumentNullException(nameof(queueName));
+            if (queueNameToListen == null)
+                throw new ArgumentNullException(nameof(queueNameToListen));
 
-            if (string.IsNullOrWhiteSpace(queueName))
-                throw new ArgumentException("The queue name is invalid.", nameof(queueName));
+            if (string.IsNullOrWhiteSpace(queueNameToListen))
+                throw new ArgumentException("The queue name is invalid.", nameof(queueNameToListen));
 
-            return _queues.GetOrAdd(queueName, key =>
+            return _queues.GetOrAdd($"{queueNameToListen}-{queueNameToWrite}", key =>
             {
-                var queue = new QueueConfiguration { Name = key, LockCollection = LockCollection };
+                var queue = new QueueConfiguration { NameToListen = queueNameToListen, NameToWrite = queueNameToWrite, LockCollection = LockCollection };
                 return CreateContainer(queue);
             });
         }
@@ -201,10 +199,12 @@ namespace MongoDB.Messaging.Configuration
 
         private IQueueContainer CreateContainer(IQueueConfiguration configuration)
         {
-            var collection = GetCollection(configuration.Name);
-            var repository = new QueueRepository(collection);
+            var collectionToListen = GetCollection(configuration.NameToListen);
+            var collectionToWrite = GetCollection(configuration.NameToWrite);
+            var repositoryToListen = new QueueRepository(collectionToListen);
+            var repositoryToWrite = new QueueRepository(collectionToWrite);
 
-            var queue = new QueueContainer(configuration, repository);
+            var queue = new QueueContainer(configuration, repositoryToListen, repositoryToWrite);
 
             return queue;
         }
@@ -219,7 +219,6 @@ namespace MongoDB.Messaging.Configuration
             return collection;
         }
 
-
         private void InitializeCollection(IMongoCollection<Message> collection)
         {
             // create indexes
@@ -231,7 +230,6 @@ namespace MongoDB.Messaging.Configuration
             TimeoutIndex(collection);
             ScheduleIndex(collection);
         }
-
 
         private void ScheduleIndex(IMongoCollection<Message> collection)
         {

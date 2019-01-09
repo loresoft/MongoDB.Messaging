@@ -64,7 +64,7 @@ namespace MongoDB.Messaging.Service
         /// <value>
         /// The storage repository.
         /// </value>
-        IQueueRepository Repository { get; }
+        IQueueRepository RepositoryToListen { get; }
 
 
 

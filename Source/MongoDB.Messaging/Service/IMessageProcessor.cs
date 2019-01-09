@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
 using MongoDB.Messaging.Configuration;
+using System.Collections.Generic;
 
 namespace MongoDB.Messaging.Service
 {
@@ -10,13 +9,20 @@ namespace MongoDB.Messaging.Service
     public interface IMessageProcessor
     {
         /// <summary>
-        /// Gets the name of the processor.
+        /// Gets the name of the listen processor.
         /// </summary>
         /// <value>
-        /// The name of the processor.
+        /// The name of the listen processor.
         /// </value>
-        string Name { get; }
+        string NameToListen { get; }
 
+        /// <summary>
+        /// Gets the name of the write processor.
+        /// </summary>
+        /// <value>
+        /// The name of the write processor.
+        /// </value>
+        string NameToWrite { get; }
 
         /// <summary>
         /// Gets a value indicating whether the processor is busy.
@@ -30,7 +36,6 @@ namespace MongoDB.Messaging.Service
         /// The number active workers
         /// </summary>
         int ActiveWorkers { get; }
-
 
         /// <summary>
         /// Gets the parent service.
@@ -64,7 +69,6 @@ namespace MongoDB.Messaging.Service
         /// </value>
         IList<IMessageWorker> Workers { get; }
 
-
         /// <summary>
         /// Start the processor and all the <see cref="Workers"/>.
         /// </summary>
@@ -74,7 +78,6 @@ namespace MongoDB.Messaging.Service
         /// Stop the processor and all the <see cref="Workers"/>.
         /// </summary>
         void Stop();
-
 
         /// <summary>
         /// Signal the processor that a worker has begun.

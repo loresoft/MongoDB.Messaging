@@ -1,10 +1,10 @@
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace MongoDB.Messaging.Storage
 {
@@ -35,7 +35,6 @@ namespace MongoDB.Messaging.Storage
             get { return _collection; }
         }
 
-
         /// <summary>
         /// Start an <see cref="IQueryable" /> of all messages.
         /// </summary>
@@ -46,7 +45,6 @@ namespace MongoDB.Messaging.Storage
         {
             return _collection.AsQueryable();
         }
-
 
         /// <summary>
         /// Finds message with the specified <paramref name="id" /> as an asynchronous operation.
@@ -61,7 +59,6 @@ namespace MongoDB.Messaging.Storage
                 .Find(m => m.Id == id)
                 .FirstOrDefaultAsync();
         }
-
 
         /// <summary>
         /// Finds one message with the specified <paramref name="criteria" /> as an asynchronous operation.
@@ -90,7 +87,6 @@ namespace MongoDB.Messaging.Storage
                 .Find(criteria)
                 .ToListAsync();
         }
-
 
         /// <summary>
         /// Gets the number of message as an asynchronous operation.
@@ -121,7 +117,6 @@ namespace MongoDB.Messaging.Storage
                 .CountAsync();
         }
 
-
         /// <summary>
         /// Save the specified <paramref name="message" /> as an asynchronous operation.
         /// </summary>
@@ -150,7 +145,6 @@ namespace MongoDB.Messaging.Storage
                 .ReplaceOneAsync(m => m.Id == message.Id, message, updateOptions)
                 .ContinueWith(t => message);
         }
-
 
         /// <summary>
         /// Delete the message with the specified <paramref name="id" /> as an asynchronous operation.
@@ -197,7 +191,6 @@ namespace MongoDB.Messaging.Storage
                 .DeleteManyAsync(criteria)
                 .ContinueWith(t => t.Result.DeletedCount);
         }
-
 
         /// <summary>
         /// Enqueue the specified <paramref name="message" /> for processing as an asynchronous operation.
@@ -275,7 +268,6 @@ namespace MongoDB.Messaging.Storage
             return _collection.FindOneAndUpdateAsync(filter, update, options);
         }
 
-
         /// <summary>
         /// Schedules the message with specified identifier for processing on the <paramref name="scheduled"/> date and time.
         /// </summary>
@@ -297,7 +289,7 @@ namespace MongoDB.Messaging.Storage
                 .Set(p => p.State, MessageState.Scheduled)
                 .Set(p => p.Scheduled, scheduled.ToUniversalTime())
                 .Set(p => p.Updated, DateTime.UtcNow)
-                .Unset(p => p.Expire);  
+                .Unset(p => p.Expire);
 
 
             var options = new FindOneAndUpdateOptions<Message, Message>();
@@ -389,8 +381,8 @@ namespace MongoDB.Messaging.Storage
                 .Set(p => p.EndTime, DateTime.UtcNow)
                 .Set(p => p.Updated, DateTime.UtcNow);
 
-            update = expireDate.HasValue 
-                ? update.Set(p => p.Expire, expireDate.Value) 
+            update = expireDate.HasValue
+                ? update.Set(p => p.Expire, expireDate.Value)
                 : update.Unset(p => p.Expire);
 
             if (!string.IsNullOrEmpty(status))
