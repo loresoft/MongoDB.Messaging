@@ -1,13 +1,13 @@
-using System;
-using System.Linq.Expressions;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Messaging.Storage;
+using System;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace MongoDB.Messaging.Tests.Storage
 {
-    
+
     public class QueueRepositoryTest
     {
         [Fact]
@@ -113,7 +113,6 @@ namespace MongoDB.Messaging.Tests.Storage
             count.Should().BeGreaterThan(0);
         }
 
-
         [Fact]
         public async void Count()
         {
@@ -128,7 +127,6 @@ namespace MongoDB.Messaging.Tests.Storage
             long count = await repo.Count(criteria);
             count.Should().BeGreaterThan(0);
         }
-
 
         [Fact]
         public async void SaveWithNoId()
@@ -145,7 +143,6 @@ namespace MongoDB.Messaging.Tests.Storage
 
             message.Id.Should().NotBeNullOrEmpty();
         }
-
 
         [Fact]
         public async void SaveWithNewId()
@@ -185,7 +182,6 @@ namespace MongoDB.Messaging.Tests.Storage
 
         }
 
-
         [Fact]
         public async void EnqueueDequeue()
         {
@@ -220,7 +216,6 @@ namespace MongoDB.Messaging.Tests.Storage
             completed.EndTime.Should().BeAfter(DateTime.MinValue);
             completed.Status.Should().NotBeNullOrEmpty();
         }
-
 
         private static QueueRepository GetRepository()
         {

@@ -38,7 +38,7 @@ namespace MongoDB.Messaging.Fluent
         public IQueueContainer Container => _queueContainer;
 
         /// <summary>
-        /// Start building a message to the queues with the specified names.
+        /// Start building a message to a queue with the specified name.
         /// </summary>
         /// <param name="name">The name of the queue.</param>
         /// <returns>A fluent interface to build the queue message.</returns>

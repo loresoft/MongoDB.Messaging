@@ -16,12 +16,13 @@ namespace MongoDB.Messaging.Configuration
         string Name { get; }
 
         /// <summary>
-        /// Gets the repository.
+        /// Gets the storage repository.
         /// </summary>
         /// <value>
-        /// The repository.
+        /// The storage repository.
         /// </value>
         IQueueRepository Repository { get; }
+
         /// <summary>
         /// Gets the queue configuration.
         /// </summary>

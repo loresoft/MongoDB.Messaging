@@ -11,18 +11,16 @@ namespace MongoDB.Messaging.Tests.Configuration
         public void LoadQueueTest()
         {
             // Initialize values 
-            string nameToListen = "test-queue-listen", nameToWrite = "test-queue-write";
+            string name = "test-queue";
 
             var manager = new QueueManager();
-            var q = manager.Load(nameToListen, nameToWrite);
+            var q = manager.Load(name);
 
             q.Should().NotBeNull();
-            q.NameToListen.Should().Be(nameToListen);
-            q.NameToWrite.Should().Be(nameToWrite);
+            q.Name.Should().Be(name);
 
             q.Configuration.Should().NotBeNull();
-            q.RepositoryToListen.Should().NotBeNull();
-            q.RepositoryToWrite.Should().NotBeNull();
+            q.Repository.Should().NotBeNull();
 
             manager.Queues.Count.Should().Be(1);
         }

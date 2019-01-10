@@ -40,10 +40,10 @@ namespace MongoDB.Messaging.Configuration
         public string Name { get; }
 
         /// <summary>
-        /// Gets the repository.
+        /// Gets the storage repository.
         /// </summary>
         /// <value>
-        /// The repository.
+        /// The storage repository.
         /// </value>
         public IQueueRepository Repository { get; }
 

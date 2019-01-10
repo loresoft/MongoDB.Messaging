@@ -119,10 +119,10 @@ namespace MongoDB.Messaging.Service
         }
 
         /// <summary>
-        /// Gets the repository.
+        /// Gets the storage repository.
         /// </summary>
         /// <value>
-        /// The repository.
+        /// The storage repository.
         /// </value>
         public IQueueRepository Repository
         {

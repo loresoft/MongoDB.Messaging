@@ -145,11 +145,11 @@ namespace MongoDB.Messaging.Configuration
         }
 
         /// <summary>
-        /// Loads the specified queues by name. If the queues have not been configured, they will be created.
+        /// Loads the specified queue by name. If the queue has not been configured, it will be created.
         /// </summary>
         /// <param name="queueName">Name of the queue.</param>
         /// <returns>
-        /// An instance of <see cref="IQueueContainer" /> with the queue names.
+        /// An instance of <see cref="IQueueContainer" /> with the queue name.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">queueName</exception>
         /// <exception cref="System.ArgumentException">The queue name is invalid.;queueName</exception>

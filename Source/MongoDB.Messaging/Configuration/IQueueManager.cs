@@ -57,7 +57,6 @@ namespace MongoDB.Messaging.Configuration
         /// </value>
         IMongoDatabase Database { get; }
 
-
         /// <summary>
         /// Registers a queue with the specified configuration.
         /// </summary>
@@ -66,10 +65,10 @@ namespace MongoDB.Messaging.Configuration
         IQueueContainer Register(IQueueConfiguration queueConfiguration);
 
         /// <summary>
-        /// Loads the specified queues by name. If the queues have not been configured, they will be created.
+        /// Loads the specified queue by name. If the queue has not been configured, it will be created.
         /// </summary>
         /// <param name="queueName">Name of the queue.</param>
-        /// <returns>An instance of <see cref="IQueueContainer"/> with the queue names.</returns>
+        /// <returns>An instance of <see cref="IQueueContainer"/> with the queue name.</returns>
         IQueueContainer Load(string queueName);
 
         /// <summary>
