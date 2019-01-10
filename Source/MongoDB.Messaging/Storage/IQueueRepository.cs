@@ -1,9 +1,9 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 
 namespace MongoDB.Messaging.Storage
 {
@@ -128,7 +128,7 @@ namespace MongoDB.Messaging.Storage
         /// <returns>
         /// The <see cref="Task"/> representing the asynchronous operation.
         /// </returns>
-        Task<Message> Dequeue();
+        Task<Message> Dequeue(FilterDefinition<Message> queueFilter);
 
         /// <summary>
         /// Requeue the message with the specified <paramref name="id"/> as an asynchronous operation.
@@ -138,7 +138,6 @@ namespace MongoDB.Messaging.Storage
         /// The <see cref="Task"/> representing the asynchronous operation.
         /// </returns>
         Task<Message> Requeue(string id);
-
 
         /// <summary>
         /// Schedules the message with specified identifier for processing on the <paramref name="scheduled"/> date and time.

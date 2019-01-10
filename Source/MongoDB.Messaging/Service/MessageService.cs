@@ -1,5 +1,7 @@
-﻿using MongoDB.Messaging.Change;
+﻿using MongoDB.Driver;
+using MongoDB.Messaging.Change;
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Filter;
 using MongoDB.Messaging.Logging;
 using System;
 using System.Collections.Generic;
@@ -90,7 +92,7 @@ namespace MongoDB.Messaging.Service
         /// <summary>
         /// Start the service and all the <see cref="Processors" />.
         /// </summary>
-        public void Start()
+        public void Start(IQueueFilter queueFilter = null)
         {
             _activeProcesses = 0;
 
@@ -100,7 +102,7 @@ namespace MongoDB.Messaging.Service
             {
                 try
                 {
-                    process.Start();
+                    process.Start(queueFilter);
                 }
                 catch (Exception ex)
                 {

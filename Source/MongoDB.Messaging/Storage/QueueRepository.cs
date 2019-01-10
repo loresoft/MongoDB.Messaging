@@ -217,10 +217,12 @@ namespace MongoDB.Messaging.Storage
         /// <returns>
         /// The <see cref="Task" /> representing the asynchronous operation.
         /// </returns>
-        public Task<Message> Dequeue()
+        public Task<Message> Dequeue(FilterDefinition<Message> queueFilter = null)
         {
-            var filter = Builders<Message>.Filter
-                .Eq(m => m.State, MessageState.Queued);
+            var filter = Builders<Message>.Filter.And(
+                queueFilter ?? Builders<Message>.Filter.Empty,
+                Builders<Message>.Filter.Eq(m => m.State, MessageState.Queued)
+            );
 
             var update = Builders<Message>.Update
                 .Set(m => m.State, MessageState.Processing)

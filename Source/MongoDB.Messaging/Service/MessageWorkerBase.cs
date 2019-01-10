@@ -1,4 +1,5 @@
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Filter;
 using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Storage;
 using System;
@@ -22,6 +23,7 @@ namespace MongoDB.Messaging.Service
         private readonly Timer _pollTimer;
         private readonly Random _random;
         private readonly string _name;
+        protected IQueueFilter _queueFilter;
 
         private volatile bool _isAwaitingShutdown;
         private int _active = 0;
@@ -154,12 +156,13 @@ namespace MongoDB.Messaging.Service
         /// <summary>
         /// Start the worker processing messages from the queue.
         /// </summary>
-        public void Start()
+        public void Start(IQueueFilter queueFilter = null)
         {
             _logger.Trace()
                 .Message("Starting '{0}' worker polling at {1}.", Name, _configuration.PollTime)
                 .Write();
 
+            _queueFilter = queueFilter;
             _isAwaitingShutdown = false;
             StartTimer(TimeSpan.FromMilliseconds(500));
         }

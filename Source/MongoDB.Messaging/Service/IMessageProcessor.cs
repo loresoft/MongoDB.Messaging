@@ -1,4 +1,5 @@
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Filter;
 using System.Collections.Generic;
 
 namespace MongoDB.Messaging.Service
@@ -72,7 +73,7 @@ namespace MongoDB.Messaging.Service
         /// <summary>
         /// Start the processor and all the <see cref="Workers"/>.
         /// </summary>
-        void Start();
+        void Start(IQueueFilter queueFilter = null);
 
         /// <summary>
         /// Stop the processor and all the <see cref="Workers"/>.

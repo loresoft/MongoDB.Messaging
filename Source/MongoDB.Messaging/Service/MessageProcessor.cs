@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Messaging.Change;
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Filter;
 using MongoDB.Messaging.Logging;
 using System;
 using System.Collections.Generic;
@@ -129,12 +130,11 @@ namespace MongoDB.Messaging.Service
         {
             get { return _workers.Value; }
         }
-
-
+        
         /// <summary>
         /// Start the processor and all the <see cref="Workers" />.
         /// </summary>
-        public void Start()
+        public void Start(IQueueFilter queueFilter = null)
         {
             // Start workers
             foreach (var worker in _workers.Value)
@@ -143,7 +143,7 @@ namespace MongoDB.Messaging.Service
                     .Message("Starting worker '{0}'.", worker.Name)
                     .Write();
 
-                worker.Start();
+                worker.Start(queueFilter);
             }
         }
 

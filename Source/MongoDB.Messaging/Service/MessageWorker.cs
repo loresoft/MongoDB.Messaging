@@ -1,3 +1,4 @@
+using MongoDB.Driver;
 using MongoDB.Messaging.Logging;
 using MongoDB.Messaging.Subscription;
 using System;
@@ -23,13 +24,18 @@ namespace MongoDB.Messaging.Service
         {
         }
 
-
         /// <summary>
         /// Process the underlying queue.
         /// </summary>
         protected override void Process()
         {
-            var message = RepositoryToListen.Dequeue().Result;
+            var filter = Builders<Message>.Filter.Empty;
+            if (_queueFilter != null)
+            {
+                filter = _queueFilter.GetQueueFilterAsync().Result;
+            }
+
+            var message = RepositoryToListen.Dequeue(filter).Result;
 
             // keep looping till queue is empty
             while (message != null)
@@ -41,10 +47,9 @@ namespace MongoDB.Messaging.Service
                     break;
 
                 // next item
-                message = RepositoryToListen.Dequeue().Result;
+                message = RepositoryToListen.Dequeue(filter).Result;
             }
         }
-
 
         private void ProcessMessage(Message message)
         {
@@ -64,7 +69,7 @@ namespace MongoDB.Messaging.Service
                     .Message(statusMessage)
                     .Write();
 
-                RepositoryToListen.UpdateStatus(id, statusMessage)
+                RepositoryToWrite.UpdateStatus(id, statusMessage)
                     .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
 
                 Stopwatch watch = Stopwatch.StartNew();
@@ -79,7 +84,7 @@ namespace MongoDB.Messaging.Service
                     .Message(statusMessage)
                     .Write();
 
-                RepositoryToListen.MarkComplete(id, result, statusMessage, expireDate)
+                RepositoryToWrite.MarkComplete(id, result, statusMessage, expireDate)
                     .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
             }
             catch (Exception ex)
@@ -92,7 +97,7 @@ namespace MongoDB.Messaging.Service
                     .Exception(ex)
                     .Write();
 
-                var task = RepositoryToListen.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
+                var task = RepositoryToWrite.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
 
                 // only retry when successfully set result to error
                 task.ContinueWith(t => RetryMessage(t.Result, ex), TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -129,7 +134,7 @@ namespace MongoDB.Messaging.Service
                 .Write();
 
             // schedule retry 
-            RepositoryToListen.Schedule(message.Id, nextAttempt);
+            RepositoryToWrite.Schedule(message.Id, nextAttempt);
         }
 
         private MessageResult ProcessSubscriber(Message message)

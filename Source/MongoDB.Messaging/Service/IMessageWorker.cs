@@ -1,5 +1,5 @@
-using System;
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Filter;
 using MongoDB.Messaging.Storage;
 
 namespace MongoDB.Messaging.Service
@@ -66,12 +66,10 @@ namespace MongoDB.Messaging.Service
         /// </value>
         IQueueRepository RepositoryToListen { get; }
 
-
-
         /// <summary>
         /// Start the worker processing messages from the queue.
         /// </summary>
-        void Start();
+        void Start(IQueueFilter queueFilter = null);
 
         /// <summary>
         /// Stop the worker from processing messages from the queue.

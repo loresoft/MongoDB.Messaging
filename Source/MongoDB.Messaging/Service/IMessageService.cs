@@ -1,6 +1,7 @@
-using System.Collections.Generic;
 using MongoDB.Messaging.Change;
 using MongoDB.Messaging.Configuration;
+using MongoDB.Messaging.Filter;
+using System.Collections.Generic;
 
 namespace MongoDB.Messaging.Service
 {
@@ -38,11 +39,10 @@ namespace MongoDB.Messaging.Service
         /// </value>
         ChangeNotifier Notifier { get; }
 
-
         /// <summary>
         /// Start the service and all the <see cref="Processors"/>.
         /// </summary>
-        void Start();
+        void Start(IQueueFilter queueFilter = null);
 
         /// <summary>
         /// Stop the service and all the <see cref="Processors"/>.
