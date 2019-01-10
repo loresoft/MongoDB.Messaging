@@ -10,20 +10,12 @@ namespace MongoDB.Messaging.Service
     public interface IMessageProcessor
     {
         /// <summary>
-        /// Gets the name of the listen processor.
+        /// Gets the name of the processor.
         /// </summary>
         /// <value>
-        /// The name of the listen processor.
+        /// The name of the processor.
         /// </value>
-        string NameToListen { get; }
-
-        /// <summary>
-        /// Gets the name of the write processor.
-        /// </summary>
-        /// <value>
-        /// The name of the write processor.
-        /// </value>
-        string NameToWrite { get; }
+        string Name { get; }
 
         /// <summary>
         /// Gets a value indicating whether the processor is busy.

@@ -41,30 +41,19 @@ namespace MongoDB.Messaging.Service
                 return;
 
             // subscribe to notifications
-            var filter = container.RepositoryToListen.Collection.CollectionNamespace.FullName;
+            var filter = container.Repository.Collection.CollectionNamespace.FullName;
             service.Notifier.Subscribe(this, filter);
         }
 
         /// <summary>
-        /// Gets the name of the listen processor.
+        /// Gets the name of the processor.
         /// </summary>
         /// <value>
-        /// The name of the listen processor.
+        /// The name of the processor.
         /// </value>
-        public string NameToListen
+        public string Name
         {
-            get { return _configuration.NameToListen; }
-        }
-
-        /// <summary>
-        /// Gets the name of the write processor.
-        /// </summary>
-        /// <value>
-        /// The name of the write processor.
-        /// </value>
-        public string NameToWrite
-        {
-            get { return _configuration.NameToWrite; }
+            get { return _configuration.Name; }
         }
 
         /// <summary>
@@ -130,7 +119,7 @@ namespace MongoDB.Messaging.Service
         {
             get { return _workers.Value; }
         }
-        
+
         /// <summary>
         /// Start the processor and all the <see cref="Workers" />.
         /// </summary>
@@ -260,7 +249,7 @@ namespace MongoDB.Messaging.Service
 
             for (int i = 0; i < count; i++)
             {
-                string name = $"{_configuration.NameToListen}-{_configuration.NameToWrite}-Worker-{i + 1:00}";
+                string name = $"{_configuration.Name}-Worker-{i + 1:00}";
                 var worker = new MessageWorker(this, name);
 
                 _logger.Trace().Message("Created worker '{0}'.", worker.Name).Write();
@@ -268,7 +257,7 @@ namespace MongoDB.Messaging.Service
             }
 
             // add health work 
-            string healthName = $"{_configuration.NameToListen}-{_configuration.NameToWrite}-Worker-Health";
+            string healthName = $"{_configuration.Name}-Worker-Health";
             var healthWorker = new HealthWorker(this, healthName);
             workers.Add(healthWorker);
 

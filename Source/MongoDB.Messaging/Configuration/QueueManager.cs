@@ -125,7 +125,7 @@ namespace MongoDB.Messaging.Configuration
             if (queueConfiguration == null)
                 throw new ArgumentNullException(nameof(queueConfiguration));
 
-            var queue = Load(queueConfiguration.NameToListen, queueConfiguration.NameToWrite);
+            var queue = Load(queueConfiguration.Name);
 
             // update config
             var config = queue.Configuration;
@@ -147,24 +147,23 @@ namespace MongoDB.Messaging.Configuration
         /// <summary>
         /// Loads the specified queues by name. If the queues have not been configured, they will be created.
         /// </summary>
-        /// <param name="queueNameToListen">Name of the listen queue.</param>
-        /// <param name="queueNameToWrite">Name of the write queue.</param>
+        /// <param name="queueName">Name of the queue.</param>
         /// <returns>
         /// An instance of <see cref="IQueueContainer" /> with the queue names.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">queueName</exception>
         /// <exception cref="System.ArgumentException">The queue name is invalid.;queueName</exception>
-        public IQueueContainer Load(string queueNameToListen, string queueNameToWrite)
+        public IQueueContainer Load(string queueName)
         {
-            if (queueNameToListen == null)
-                throw new ArgumentNullException(nameof(queueNameToListen));
+            if (queueName == null)
+                throw new ArgumentNullException(nameof(queueName));
 
-            if (string.IsNullOrWhiteSpace(queueNameToListen))
-                throw new ArgumentException("The queue name is invalid.", nameof(queueNameToListen));
+            if (string.IsNullOrWhiteSpace(queueName))
+                throw new ArgumentException("The queue name is invalid.", nameof(queueName));
 
-            return _queues.GetOrAdd($"{queueNameToListen}-{queueNameToWrite}", key =>
+            return _queues.GetOrAdd(queueName, key =>
             {
-                var queue = new QueueConfiguration { NameToListen = queueNameToListen, NameToWrite = queueNameToWrite, LockCollection = LockCollection };
+                var queue = new QueueConfiguration { Name = key, LockCollection = LockCollection };
                 return CreateContainer(queue);
             });
         }
@@ -199,12 +198,10 @@ namespace MongoDB.Messaging.Configuration
 
         private IQueueContainer CreateContainer(IQueueConfiguration configuration)
         {
-            var collectionToListen = GetCollection(configuration.NameToListen);
-            var collectionToWrite = GetCollection(configuration.NameToWrite);
-            var repositoryToListen = new QueueRepository(collectionToListen);
-            var repositoryToWrite = new QueueRepository(collectionToWrite);
+            var collection = GetCollection(configuration.Name);
+            var repository = new QueueRepository(collection);
 
-            var queue = new QueueContainer(configuration, repositoryToListen, repositoryToWrite);
+            var queue = new QueueContainer(configuration, repository);
 
             return queue;
         }

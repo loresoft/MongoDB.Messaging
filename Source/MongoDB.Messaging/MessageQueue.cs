@@ -114,7 +114,7 @@ namespace MongoDB.Messaging
                 throw new InvalidOperationException("Could not find queue to publish message.");
 
             // enqueue on repository
-            return container.RepositoryToListen.Enqueue(message);
+            return container.Repository.Enqueue(message);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace MongoDB.Messaging
                 throw new InvalidOperationException("Could not find queue to publish message.");
 
             // schedule on repository
-            return container.RepositoryToWrite.Schedule(message);
+            return container.Repository.Schedule(message);
         }
 
         #region Singleton

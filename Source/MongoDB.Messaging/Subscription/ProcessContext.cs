@@ -1,4 +1,3 @@
-using System;
 using MongoDB.Bson.Serialization;
 using MongoDB.Messaging.Configuration;
 
@@ -67,7 +66,7 @@ namespace MongoDB.Messaging.Subscription
                 return;
 
             // fire and forget or block?
-            _container.RepositoryToWrite.UpdateStatus(_message.Id, message, step);
+            _container.Repository.UpdateStatus(_message.Id, message, step);
         }
     }
 }

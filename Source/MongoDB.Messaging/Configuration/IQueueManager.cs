@@ -1,7 +1,6 @@
-﻿using System;
+﻿using MongoDB.Driver;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using MongoDB.Driver;
 
 namespace MongoDB.Messaging.Configuration
 {
@@ -17,7 +16,7 @@ namespace MongoDB.Messaging.Configuration
         /// The connection string.
         /// </value>
         string ConnectionString { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the name of the connection string for change notification.
         /// </summary>
@@ -69,10 +68,9 @@ namespace MongoDB.Messaging.Configuration
         /// <summary>
         /// Loads the specified queues by name. If the queues have not been configured, they will be created.
         /// </summary>
-        /// <param name="queueNameToListen">Name of the listen queue.</param>
-        /// <param name="queueNameToWrite">Name of the write queue.</param>
+        /// <param name="queueName">Name of the queue.</param>
         /// <returns>An instance of <see cref="IQueueContainer"/> with the queue names.</returns>
-        IQueueContainer Load(string queueNameToListen, string queueNameToWrite);
+        IQueueContainer Load(string queueName);
 
         /// <summary>
         /// Sets the underlying storage <paramref name="database"/>.

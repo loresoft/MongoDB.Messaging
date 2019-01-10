@@ -36,17 +36,16 @@ namespace MongoDB.Messaging.Fluent
         /// The queue instance.
         /// </value>
         public IQueueContainer Container => _queueContainer;
-        
+
         /// <summary>
         /// Start building a message to the queues with the specified names.
         /// </summary>
-        /// <param name="nameToListen">The name of the listen queue.</param>
-        /// <param name="nameToWrite">The name of the write queue.</param>
+        /// <param name="name">The name of the queue.</param>
         /// <returns>A fluent interface to build the queue message.</returns>
-        public MessageBuilder Queue(string nameToListen, string nameToWrite)
+        public MessageBuilder Queue(string name)
         {
             // load queue, apply defaults to message
-            _queueContainer = Manager.Load(nameToListen, nameToWrite);
+            _queueContainer = Manager.Load(name);
             _queueContainer.ApplyDefaults(_message);
 
             return new MessageBuilder(_message); ;

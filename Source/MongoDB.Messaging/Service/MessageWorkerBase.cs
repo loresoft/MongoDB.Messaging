@@ -18,8 +18,7 @@ namespace MongoDB.Messaging.Service
         private readonly IMessageProcessor _processor;
         private readonly IQueueContainer _container;
         private readonly IQueueConfiguration _configuration;
-        private readonly IQueueRepository _repositoryToListen;
-        private readonly IQueueRepository _repositoryToWrite;
+        private readonly IQueueRepository _repository;
         private readonly Timer _pollTimer;
         private readonly Random _random;
         private readonly string _name;
@@ -47,8 +46,7 @@ namespace MongoDB.Messaging.Service
             _processor = processor;
             _container = _processor.Container;
             _configuration = _container.Configuration;
-            _repositoryToListen = _container.RepositoryToListen;
-            _repositoryToWrite = _container.RepositoryToWrite;
+            _repository = _container.Repository;
 
             _random = new Random();
             _pollTimer = new Timer(PollQueue, null, -1, -1);
@@ -121,25 +119,14 @@ namespace MongoDB.Messaging.Service
         }
 
         /// <summary>
-        /// Gets the listen repository.
+        /// Gets the repository.
         /// </summary>
         /// <value>
-        /// The listen repository.
+        /// The repository.
         /// </value>
-        public IQueueRepository RepositoryToListen
+        public IQueueRepository Repository
         {
-            get { return _repositoryToListen; }
-        }
-
-        /// <summary>
-        /// Gets the write repository.
-        /// </summary>
-        /// <value>
-        /// The write repository.
-        /// </value>
-        public IQueueRepository RepositoryToWrite
-        {
-            get { return _repositoryToWrite; }
+            get { return _repository; }
         }
 
         /// <summary>

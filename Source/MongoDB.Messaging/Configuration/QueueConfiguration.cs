@@ -30,20 +30,12 @@ namespace MongoDB.Messaging.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the name of the listen queue.
+        /// Gets or sets the name of the queue.
         /// </summary>
         /// <value>
-        /// The name of the listen queue.
+        /// The name of the queue.
         /// </value>
-        public string NameToListen { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the write queue.
-        /// </summary>
-        /// <value>
-        /// The name of the write queue.
-        /// </value>
-        public string NameToWrite { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the user description for the queue.

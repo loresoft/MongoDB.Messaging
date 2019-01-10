@@ -1,9 +1,9 @@
-using System;
-using System.Diagnostics;
-using System.Linq.Expressions;
 using MongoDB.Driver;
 using MongoDB.Messaging.Locks;
 using MongoDB.Messaging.Logging;
+using System;
+using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace MongoDB.Messaging.Service
 {
@@ -25,7 +25,7 @@ namespace MongoDB.Messaging.Service
         {
             // create throttle lock to only allow one run per schedule
             var lockCollection = Configuration.LockCollection ?? "ServiceLock";
-            var collection = RepositoryToListen.Collection.Database.GetCollection<LockData>(lockCollection);
+            var collection = Repository.Collection.Database.GetCollection<LockData>(lockCollection);
             _lockManager = new ThrottleLock(collection, Configuration.HealthCheck);
         }
 
@@ -81,7 +81,7 @@ namespace MongoDB.Messaging.Service
 
             var updateOptions = new UpdateOptions { IsUpsert = false };
 
-            var t = RepositoryToListen.Collection.UpdateManyAsync(
+            var t = Repository.Collection.UpdateManyAsync(
                 filter,
                 updateDefinition,
                 updateOptions);
@@ -100,7 +100,7 @@ namespace MongoDB.Messaging.Service
         private void CheckSchedule()
         {
             var watch = Stopwatch.StartNew();
-            
+
             var currentDate = DateTime.UtcNow;
 
             // all message that are scheduled and schedule date before now
@@ -113,7 +113,7 @@ namespace MongoDB.Messaging.Service
 
             var updateOptions = new UpdateOptions { IsUpsert = false };
 
-            var t = RepositoryToListen.Collection.UpdateManyAsync(
+            var t = Repository.Collection.UpdateManyAsync(
                 filter,
                 updateDefinition,
                 updateOptions);

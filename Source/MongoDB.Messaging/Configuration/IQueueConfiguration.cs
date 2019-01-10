@@ -1,5 +1,5 @@
-using System;
 using MongoDB.Messaging.Subscription;
+using System;
 
 namespace MongoDB.Messaging.Configuration
 {
@@ -9,20 +9,12 @@ namespace MongoDB.Messaging.Configuration
     public interface IQueueConfiguration
     {
         /// <summary>
-        /// Gets or sets the name of the listen queue.
+        /// Gets or sets the name of the queue.
         /// </summary>
         /// <value>
-        /// The name of the listen queue.
+        /// The name of the queue.
         /// </value>
-        string NameToListen { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the write queue.
-        /// </summary>
-        /// <value>
-        /// The name of the write queue.
-        /// </value>
-        string NameToWrite { get; set; }
+        string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the user description for the queue.

@@ -107,7 +107,7 @@ namespace MongoDB.Messaging.Service
                 catch (Exception ex)
                 {
                     _logger.Error()
-                        .Message($"Error trying to start processor '{process.NameToListen}-{process.NameToWrite}'.")
+                        .Message($"Error trying to start processor '{process.Name}'.")
                         .Exception(ex)
                         .Write();
                 }

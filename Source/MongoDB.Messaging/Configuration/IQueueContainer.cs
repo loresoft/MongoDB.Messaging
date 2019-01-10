@@ -8,37 +8,20 @@ namespace MongoDB.Messaging.Configuration
     public interface IQueueContainer
     {
         /// <summary>
-        /// Gets the name of the listen queue.
+        /// Gets the name of the queue.
         /// </summary>
         /// <value>
-        /// The name of the listen queue.
+        /// The name of the queue.
         /// </value>
-        string NameToListen { get; }
+        string Name { get; }
 
         /// <summary>
-        /// Gets the name of the write queue.
+        /// Gets the repository.
         /// </summary>
         /// <value>
-        /// The name of the write queue.
+        /// The repository.
         /// </value>
-        string NameToWrite { get; }
-
-        /// <summary>
-        /// Gets the listen repository.
-        /// </summary>
-        /// <value>
-        /// The listen repository.
-        /// </value>
-        IQueueRepository RepositoryToListen { get; }
-
-        /// <summary>
-        /// Gets the write repository.
-        /// </summary>
-        /// <value>
-        /// The write repository.
-        /// </value>
-        IQueueRepository RepositoryToWrite { get; }
-
+        IQueueRepository Repository { get; }
         /// <summary>
         /// Gets the queue configuration.
         /// </summary>

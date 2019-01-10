@@ -19,13 +19,12 @@ namespace MongoDB.Messaging.Fluent
         /// <summary>
         /// The names of the queues to configure.
         /// </summary>
-        /// <param name="nameToListen">The queue listen name.</param>
-        /// <param name="nameToWrite">The queue write name.</param>
+        /// <param name="name">The queue name.</param>
         /// <returns></returns>
-        public QueueConfigurationBuilder Name(string nameToListen, string nameToWrite)
+        public QueueConfigurationBuilder Name(string name)
         {
             // load queue
-            var queue = Manager.Load(nameToListen, nameToWrite);
+            var queue = Manager.Load(name);
             var configuration = queue.Configuration;
 
             return new QueueConfigurationBuilder(configuration);

@@ -35,7 +35,7 @@ namespace MongoDB.Messaging.Service
                 filter = _queueFilter.GetQueueFilterAsync().Result;
             }
 
-            var message = RepositoryToListen.Dequeue(filter).Result;
+            var message = Repository.Dequeue(filter).Result;
 
             // keep looping till queue is empty
             while (message != null)
@@ -47,7 +47,7 @@ namespace MongoDB.Messaging.Service
                     break;
 
                 // next item
-                message = RepositoryToListen.Dequeue(filter).Result;
+                message = Repository.Dequeue(filter).Result;
             }
         }
 
@@ -69,7 +69,7 @@ namespace MongoDB.Messaging.Service
                     .Message(statusMessage)
                     .Write();
 
-                RepositoryToWrite.UpdateStatus(id, statusMessage)
+                Repository.UpdateStatus(id, statusMessage)
                     .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
 
                 Stopwatch watch = Stopwatch.StartNew();
@@ -84,7 +84,7 @@ namespace MongoDB.Messaging.Service
                     .Message(statusMessage)
                     .Write();
 
-                RepositoryToWrite.MarkComplete(id, result, statusMessage, expireDate)
+                Repository.MarkComplete(id, result, statusMessage, expireDate)
                     .ContinueWith(LogTaskError, TaskContinuationOptions.OnlyOnFaulted);
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace MongoDB.Messaging.Service
                     .Exception(ex)
                     .Write();
 
-                var task = RepositoryToWrite.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
+                var task = Repository.MarkComplete(id, MessageResult.Error, statusMessage, expireDate);
 
                 // only retry when successfully set result to error
                 task.ContinueWith(t => RetryMessage(t.Result, ex), TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -134,7 +134,7 @@ namespace MongoDB.Messaging.Service
                 .Write();
 
             // schedule retry 
-            RepositoryToWrite.Schedule(message.Id, nextAttempt);
+            Repository.Schedule(message.Id, nextAttempt);
         }
 
         private MessageResult ProcessSubscriber(Message message)
@@ -155,7 +155,7 @@ namespace MongoDB.Messaging.Service
             // can't process messages without subscriber, don't start again
             Shutdown();
 
-            throw new InvalidOperationException($"Error creating Subscriber for queue '{Configuration.NameToListen}-{Configuration.NameToWrite}'.");
+            throw new InvalidOperationException($"Error creating Subscriber for queue '{Configuration.Name}'.");
         }
 
         private DateTime? GetExpire(MessageResult result)

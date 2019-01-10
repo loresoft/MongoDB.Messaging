@@ -18,56 +18,34 @@ namespace MongoDB.Messaging.Configuration
         /// or
         /// repository
         /// </exception>
-        public QueueContainer(IQueueConfiguration configuration, IQueueRepository repositoryToListen, IQueueRepository repositoryToWrite)
+        public QueueContainer(IQueueConfiguration configuration, IQueueRepository repository)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            if (repositoryToListen == null)
-                throw new ArgumentNullException(nameof(repositoryToListen));
+            if (repository == null)
+                throw new ArgumentNullException(nameof(repository));
 
-            // If only one repository is given, it will be used to read and write
-            if (repositoryToWrite == null)
-                repositoryToWrite = repositoryToListen;
-
-            NameToListen = configuration.NameToListen;
-            NameToWrite = configuration.NameToWrite;
+            Name = configuration.Name;
             Configuration = configuration;
-            RepositoryToListen = repositoryToListen;
-            RepositoryToWrite = repositoryToWrite;
+            Repository = repository;
         }
 
         /// <summary>
-        /// Gets the name of the listen queue.
+        /// Gets the name of the queue.
         /// </summary>
         /// <value>
-        /// The name of the listen queue.
+        /// The name of the queue.
         /// </value>
-        public string NameToListen { get; }
+        public string Name { get; }
 
         /// <summary>
-        /// Gets the name of the write queue.
+        /// Gets the repository.
         /// </summary>
         /// <value>
-        /// The name of the write queue.
+        /// The repository.
         /// </value>
-        public string NameToWrite { get; }
-
-        /// <summary>
-        /// Gets the listen repository.
-        /// </summary>
-        /// <value>
-        /// The listen repository.
-        /// </value>
-        public IQueueRepository RepositoryToListen { get; }
-
-        /// <summary>
-        /// Gets the write repository.
-        /// </summary>
-        /// <value>
-        /// The write repository.
-        /// </value>
-        public IQueueRepository RepositoryToWrite { get; }
+        public IQueueRepository Repository { get; }
 
         /// <summary>
         /// Gets the queue configuration.
@@ -83,7 +61,7 @@ namespace MongoDB.Messaging.Configuration
         /// <param name="message">The message to update.</param>
         public void ApplyDefaults(Message message)
         {
-            message.Name = $"{Configuration.NameToListen}-{Configuration.NameToWrite}";
+            message.Name = Configuration.Name;
             message.RetryCount = Configuration.RetryCount;
             message.Priority = (int)Configuration.Priority;
             message.ResponseQueue = Configuration.ResponseQueue;
