@@ -29,13 +29,7 @@ namespace MongoDB.Messaging.Service
         /// </summary>
         protected override void Process()
         {
-            var filter = Builders<Message>.Filter.Empty;
-            if (_queueFilter != null)
-            {
-                filter = _queueFilter.GetQueueFilterAsync().Result;
-            }
-
-            var message = Repository.Dequeue(filter).Result;
+            var message = DequeueMessage();
 
             // keep looping till queue is empty
             while (message != null)
@@ -47,8 +41,19 @@ namespace MongoDB.Messaging.Service
                     break;
 
                 // next item
-                message = Repository.Dequeue(filter).Result;
+                message = DequeueMessage();
             }
+        }
+
+        private Message DequeueMessage()
+        {
+            var filter = Builders<Message>.Filter.Empty;
+            if (_queueFilter != null)
+            {
+                filter = _queueFilter.GetQueueFilterAsync().Result;
+            }
+
+            return Repository.Dequeue(filter).Result;
         }
 
         private void ProcessMessage(Message message)
