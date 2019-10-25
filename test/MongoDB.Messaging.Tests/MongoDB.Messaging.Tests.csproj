@@ -7,7 +7,7 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.3</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
     <PackageReference Include="DataGenerator" Version="4.0.0.19" />
     <PackageReference Include="FluentAssertions" Version="5.3.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.6.1" />
