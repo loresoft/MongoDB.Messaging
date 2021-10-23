@@ -31,7 +31,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
     <PackageReference Include="System.ComponentModel" Version="4.0.1" />
     <PackageReference Include="System.Runtime" Version="4.1.0" />
-    <PackageReference Include="System.Threading.Thread" Version="4.0.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
